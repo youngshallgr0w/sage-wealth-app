@@ -180,18 +180,36 @@ function populateReceiptPage(amount, dateObj) {
 // ════════════════════════════════════════════
 //  PIN ENTRY
 // ════════════════════════════════════════════
-const CORRECT_PIN = localStorage.getItem('sw_user_pin') || '1467';
 let pinEntry = '';
+let pinLength = 4;
+
+function currentStoredPin() {
+  return localStorage.getItem('sw_user_pin') || '1467';
+}
+
+function renderPinDots() {
+  pinLength = currentStoredPin().length;
+  const row = document.getElementById('pinDotsRow');
+  if (!row) return;
+  row.innerHTML = '';
+  for (let i = 0; i < pinLength; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'pin-dot';
+    dot.id = 'pd' + i;
+    row.appendChild(dot);
+  }
+}
 
 function resetPin() {
   pinEntry = '';
+  renderPinDots();
   updatePinDots();
   const err = document.getElementById('pinError');
   if (err) err.classList.add('hidden');
 }
 
 function updatePinDots() {
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < pinLength; i++) {
     const dot = document.getElementById('pd' + i);
     if (!dot) continue;
     dot.classList.remove('filled', 'error', 'shake');
@@ -200,7 +218,7 @@ function updatePinDots() {
 }
 
 function shakePin() {
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < pinLength; i++) {
     const dot = document.getElementById('pd' + i);
     if (!dot) continue;
     dot.classList.remove('filled');
@@ -209,7 +227,7 @@ function shakePin() {
     dot.classList.add('shake');
   }
   setTimeout(() => {
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < pinLength; i++) {
       const dot = document.getElementById('pd' + i);
       if (dot) dot.classList.remove('error', 'shake');
     }
@@ -227,13 +245,13 @@ function initPinPage() {
 
   document.querySelectorAll('.key-btn[data-val]').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (pinEntry.length >= 4) return;
+      if (pinEntry.length >= pinLength) return;
       pinEntry += btn.dataset.val;
       updatePinDots();
 
-      if (pinEntry.length === 4) {
+      if (pinEntry.length === pinLength) {
         setTimeout(() => {
-          const currentPin = localStorage.getItem('sw_user_pin') || '1467';
+          const currentPin = currentStoredPin();
           if (pinEntry === currentPin) {
             // PIN correct — process withdrawal
             processWithdrawal();
@@ -260,7 +278,7 @@ function initPinPage() {
 }
 
 function processWithdrawal() {
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < pinLength; i++) {
     const dot = document.getElementById('pd' + i);
     if (dot) { dot.classList.remove('error'); dot.classList.add('filled'); }
   }

@@ -309,6 +309,88 @@
     <span id="toastMsg">Action successful</span>
   </div>
 
+  <!-- ══ PIN SETUP OVERLAY (first-time PIN creation) ══ -->
+  <div class="pin-setup-overlay hidden" id="pinSetupOverlay">
+
+    <!-- STEP 0: INTRO -->
+    <div class="pin-step active" id="pinStepIntro">
+      <div class="pin-step-body pin-step-center">
+        <div class="pin-illustration"><i class="fa-solid fa-shield-halved"></i></div>
+        <h2 class="pin-step-heading">Set a PIN</h2>
+        <p class="pin-step-sub">Add a PIN code to keep your account secure and sign in faster next time.</p>
+      </div>
+      <button class="pin-step-btn" id="pinIntroContinue">Continue</button>
+    </div>
+
+    <!-- STEP 1: CREATE -->
+    <div class="pin-step" id="pinStepCreate">
+      <header class="pin-step-topbar">
+        <button class="pin-back-btn" id="pinCreateBack"><i class="fa-solid fa-arrow-left"></i></button>
+      </header>
+      <div class="pin-step-body">
+        <h2 class="pin-step-heading">Create account PIN</h2>
+        <p class="pin-step-sub">Choose a 4 to 6 digit PIN</p>
+        <div class="pin-dots-row" id="setupDotsCreate"></div>
+      </div>
+      <div class="pin-keypad" id="pinKeypadCreate">
+        <button class="key-btn" data-val="1">1</button>
+        <button class="key-btn" data-val="2">2<span class="key-sub">ABC</span></button>
+        <button class="key-btn" data-val="3">3<span class="key-sub">DEF</span></button>
+        <button class="key-btn" data-val="4">4<span class="key-sub">GHI</span></button>
+        <button class="key-btn" data-val="5">5<span class="key-sub">JKL</span></button>
+        <button class="key-btn" data-val="6">6<span class="key-sub">MNO</span></button>
+        <button class="key-btn" data-val="7">7<span class="key-sub">PQRS</span></button>
+        <button class="key-btn" data-val="8">8<span class="key-sub">TUV</span></button>
+        <button class="key-btn" data-val="9">9<span class="key-sub">WXYZ</span></button>
+        <div class="key-empty"></div>
+        <button class="key-btn" data-val="0">0</button>
+        <button class="key-btn key-del"><i class="fa-solid fa-delete-left"></i></button>
+      </div>
+      <button class="pin-step-btn" id="pinCreateContinue" disabled>Continue</button>
+    </div>
+
+    <!-- STEP 2: CONFIRM -->
+    <div class="pin-step" id="pinStepConfirm">
+      <header class="pin-step-topbar">
+        <button class="pin-back-btn" id="pinConfirmBack"><i class="fa-solid fa-arrow-left"></i></button>
+      </header>
+      <div class="pin-step-body">
+        <h2 class="pin-step-heading">Confirm your PIN</h2>
+        <p class="pin-step-sub">Re-enter your PIN to confirm</p>
+        <div class="pin-dots-row" id="setupDotsConfirm"></div>
+        <div class="pin-error hidden" id="pinSetupError">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="pinSetupErrorMsg">PINs do not match. Try again.</span>
+        </div>
+      </div>
+      <div class="pin-keypad" id="pinKeypadConfirm">
+        <button class="key-btn" data-val="1">1</button>
+        <button class="key-btn" data-val="2">2<span class="key-sub">ABC</span></button>
+        <button class="key-btn" data-val="3">3<span class="key-sub">DEF</span></button>
+        <button class="key-btn" data-val="4">4<span class="key-sub">GHI</span></button>
+        <button class="key-btn" data-val="5">5<span class="key-sub">JKL</span></button>
+        <button class="key-btn" data-val="6">6<span class="key-sub">MNO</span></button>
+        <button class="key-btn" data-val="7">7<span class="key-sub">PQRS</span></button>
+        <button class="key-btn" data-val="8">8<span class="key-sub">TUV</span></button>
+        <button class="key-btn" data-val="9">9<span class="key-sub">WXYZ</span></button>
+        <div class="key-empty"></div>
+        <button class="key-btn" data-val="0">0</button>
+        <button class="key-btn key-del"><i class="fa-solid fa-delete-left"></i></button>
+      </div>
+    </div>
+
+    <!-- STEP 3: SUCCESS -->
+    <div class="pin-step" id="pinStepSuccess">
+      <div class="pin-step-body pin-step-center">
+        <div class="pin-illustration success"><i class="fa-solid fa-circle-check"></i></div>
+        <h2 class="pin-step-heading">PIN Created!</h2>
+        <p class="pin-step-sub">You can now use this PIN to authorize withdrawals and sign in faster next time.</p>
+      </div>
+      <button class="pin-step-btn" id="pinSetupDone">Done</button>
+    </div>
+
+  </div>
+
   <script type="module">
     import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount } from './session.js';
     window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount };
@@ -318,6 +400,7 @@
       document.dispatchEvent(new CustomEvent('sw:ready', { detail: { uid, profile } }));
     });
   </script>
+  <script src="pin-setup.js"></script>
   <script src="app.js"></script>
 </body>
 

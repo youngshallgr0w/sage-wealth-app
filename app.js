@@ -115,6 +115,7 @@ document.addEventListener('sw:ready', async (e) => {
       animateItems();
       renderNotifBadge();
       renderCardWithdrawal();
+      if (typeof window.maybeShowPinSetup === 'function') window.maybeShowPinSetup();
     }, 560);
   }, 2800);
 });

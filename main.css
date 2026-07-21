@@ -982,6 +982,84 @@ input { font-family: inherit; }
 .toast-icon { color: var(--green); font-size: 1rem; }
 
 /* ════════════════════════════════════════════
+   PIN SETUP OVERLAY (first-time PIN creation)
+   ════════════════════════════════════════════ */
+.pin-setup-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: var(--bg);
+  max-width: 430px; margin: 0 auto;
+  display: flex; flex-direction: column;
+}
+.pin-setup-overlay.hidden { display: none; }
+
+.pin-step { display: none; flex-direction: column; height: 100%; padding: 24px 24px 40px; }
+.pin-step.active { display: flex; }
+
+.pin-step-topbar { display: flex; align-items: center; padding-top: 8px; }
+.pin-back-btn {
+  width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--surface2); color: var(--text); font-size: 14px; border: 1px solid var(--border);
+}
+
+.pin-step-body { flex: 1; display: flex; flex-direction: column; padding-top: 24px; }
+.pin-step-center { align-items: center; justify-content: center; text-align: center; }
+
+.pin-illustration {
+  width: 84px; height: 84px; border-radius: 24px;
+  background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px; color: var(--red);
+  margin-bottom: 24px;
+}
+.pin-illustration.success { background: rgba(39,174,96,0.12); border-color: rgba(39,174,96,0.3); color: var(--green); }
+
+.pin-step-heading {
+  font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--text);
+  margin-bottom: 10px;
+}
+.pin-step-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 280px; margin-bottom: 28px; }
+
+.pin-setup-overlay .pin-dots-row { display: flex; gap: 16px; justify-content: center; margin-bottom: 20px; }
+.pin-setup-overlay .pin-dot {
+  width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); background: transparent;
+  transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
+}
+.pin-setup-overlay .pin-dot.filled { background: var(--red); border-color: var(--red); transform: scale(1.15); box-shadow: 0 0 10px rgba(192,57,43,0.45); }
+.pin-setup-overlay .pin-dot.error { background: #e74c3c; border-color: #e74c3c; box-shadow: 0 0 10px rgba(231,76,60,0.45); }
+.pin-setup-overlay .pin-dot.shake { animation: pinDotShake 0.4s ease; }
+@keyframes pinDotShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); } 40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
+}
+
+.pin-setup-overlay .pin-error {
+  display: flex; align-items: center; gap: 8px; background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3);
+  border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #e74c3c; margin-bottom: 20px; width: 100%;
+}
+.pin-setup-overlay .pin-error.hidden { display: none; }
+
+.pin-setup-overlay .pin-keypad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 320px; margin: 0 auto;
+}
+.pin-setup-overlay .key-btn {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 64px; border-radius: 16px; background: var(--surface2); border: 1px solid var(--border);
+  font-size: 22px; font-weight: 600; color: var(--text); font-family: var(--font-body);
+  transition: all 0.15s ease; gap: 1px;
+}
+.pin-setup-overlay .key-btn:active { transform: scale(0.93); border-color: var(--red); }
+.pin-setup-overlay .key-sub { font-size: 8px; font-weight: 500; color: var(--text-muted); letter-spacing: 1px; }
+
+.pin-step-btn {
+  width: 100%; padding: 16px; border-radius: 16px; background: var(--red); color: #fff;
+  font-size: 16px; font-weight: 700; font-family: var(--font-body); margin-top: 20px;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+.pin-step-btn:active { transform: scale(0.98); }
+.pin-step-btn:disabled { opacity: 0.4; pointer-events: none; }
+
+/* ════════════════════════════════════════════
    RESPONSIVE
    ════════════════════════════════════════════ */
 @media (max-width: 380px) {
