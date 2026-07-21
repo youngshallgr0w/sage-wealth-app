@@ -4,8 +4,7 @@
    ══════════════════════════════════════════════ */
 
 (function () {
-  const MIN_LEN = 4;
-  const MAX_LEN = 6;
+  const PIN_LEN = 4;
 
   const overlay = document.getElementById('pinSetupOverlay');
   if (!overlay) return;
@@ -15,22 +14,24 @@
   let pendingPin = '';
 
   function showStep(id) {
-    overlay.querySelectorAll('.pin-step').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    overlay.querySelectorAll('.pin-step').forEach(s => s.classList.remove('active', 'step-in'));
+    const target = document.getElementById(id);
+    target.classList.add('active');
+    void target.offsetWidth;
+    target.classList.add('step-in');
   }
 
   function renderCreateDots() {
     const row = document.getElementById('setupDotsCreate');
     if (!row) return;
-    const shown = Math.max(createEntry.length, MIN_LEN);
     row.innerHTML = '';
-    for (let i = 0; i < shown; i++) {
+    for (let i = 0; i < PIN_LEN; i++) {
       const dot = document.createElement('div');
       dot.className = 'pin-dot' + (i < createEntry.length ? ' filled' : '');
       row.appendChild(dot);
     }
     const continueBtn = document.getElementById('pinCreateContinue');
-    if (continueBtn) continueBtn.disabled = createEntry.length < MIN_LEN;
+    if (continueBtn) continueBtn.disabled = createEntry.length < PIN_LEN;
   }
 
   function renderConfirmDots() {
@@ -65,7 +66,7 @@
   }
 
   wireKeypad('pinKeypadCreate', (val) => {
-    if (createEntry.length >= MAX_LEN) return;
+    if (createEntry.length >= PIN_LEN) return;
     createEntry += val;
     renderCreateDots();
   }, () => {
@@ -107,7 +108,7 @@
   });
 
   document.getElementById('pinCreateContinue').addEventListener('click', () => {
-    if (createEntry.length < MIN_LEN) return;
+    if (createEntry.length < PIN_LEN) return;
     pendingPin = createEntry;
     confirmEntry = '';
     renderConfirmDots();
