@@ -521,7 +521,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label class="input-label">Profile Picture <span style="color:var(--text-dim); text-transform:none; font-weight:400;">(optional)</span></label>
+                    <label class="input-label">Profile Picture</label>
                     <div class="photo-upload-row">
                         <div class="photo-preview" id="regPhotoPreview"><i class="fa-solid fa-user"></i></div>
                         <label class="photo-upload-btn" for="regPhotoInput"><i class="fa-solid fa-camera"></i> Choose Photo</label>
@@ -991,6 +991,7 @@
             const errTxt   = document.getElementById('registerErrorText');
             errBox.classList.remove('show');
             if (!name || !email || !phone || !password) { errTxt.textContent = 'Please fill in all fields.'; errBox.classList.add('show'); shakeCard(); return; }
+            if (!regPhotoFile) { errTxt.textContent = 'Please choose a profile picture.'; errBox.classList.add('show'); shakeCard(); return; }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errTxt.textContent = 'Please enter a valid email address.'; errBox.classList.add('show'); shakeCard(); return; }
             if (phoneLocal.replace(/[^0-9]/g, '').length < 7) { errTxt.textContent = 'Please enter a valid phone number.'; errBox.classList.add('show'); shakeCard(); return; }
             if (password.length < 8) { errTxt.textContent = 'Password must be at least 8 characters.'; errBox.classList.add('show'); shakeCard(); return; }
