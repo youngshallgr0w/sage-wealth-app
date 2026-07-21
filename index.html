@@ -200,6 +200,43 @@
         .input-check { position:absolute; right:14px; color:var(--green); font-size:0.8rem; opacity:0; transition:opacity 0.3s ease; pointer-events:none; }
         .input-check.show { opacity:1; }
 
+        /* ── Phone country selector ── */
+        .phone-field-row { display:flex; gap:8px; }
+        .country-select-btn {
+            display:flex; align-items:center; gap:7px; flex-shrink:0;
+            background:var(--surface2); border:1px solid var(--border); border-radius:12px;
+            padding:14px 12px; font-size:0.85rem; font-weight:500; color:var(--text);
+            transition:border-color var(--transition), background var(--transition);
+        }
+        .country-select-btn:hover { border-color:var(--text-muted); }
+        .country-select-btn.open { border-color:var(--red); background:#1f1f1f; }
+        .country-select-btn i { font-size:0.65rem; color:var(--text-dim); }
+        .country-select-btn span:first-child { font-size:1.05rem; line-height:1; }
+
+        .country-dropdown {
+            display:none; position:absolute; top:100%; left:0; margin-top:6px; width:100%;
+            max-width:320px; background:var(--surface2); border:1px solid var(--border);
+            border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,0.5); z-index:20; overflow:hidden;
+        }
+        .country-dropdown.open { display:block; }
+        .country-search-wrap { position:relative; padding:10px; border-bottom:1px solid var(--border); }
+        .country-search-wrap i { position:absolute; left:22px; top:50%; transform:translateY(-50%); color:var(--text-dim); font-size:0.75rem; }
+        .country-search {
+            width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px;
+            padding:9px 12px 9px 30px; font-size:0.82rem; color:var(--text); outline:none;
+        }
+        .country-search:focus { border-color:var(--red); }
+        .country-list { max-height:240px; overflow-y:auto; }
+        .country-item {
+            display:flex; align-items:center; gap:10px; padding:10px 14px; font-size:0.82rem;
+            cursor:pointer; transition:background 0.15s ease;
+        }
+        .country-item:hover, .country-item.active { background:rgba(192,57,43,0.12); }
+        .country-item .flag { font-size:1.05rem; }
+        .country-item .name { flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .country-item .code { color:var(--text-muted); font-size:0.78rem; }
+        .country-list-empty { padding:16px; text-align:center; color:var(--text-dim); font-size:0.8rem; }
+
         .panel { transition:opacity 0.3s ease, transform 0.3s ease; }
         .panel.hidden-panel { display:none; }
 
@@ -501,12 +538,27 @@
                     </div>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group" style="position:relative;">
                     <label class="input-label">Phone Number</label>
-                    <div class="input-wrap">
-                        <i class="fa-solid fa-phone input-icon"></i>
-                        <input type="tel" class="form-input" id="regPhone" placeholder="+1 (555) 123-4567" autocomplete="tel" required minlength="7" />
-                        <i class="fa-solid fa-check input-check" id="regPhoneCheck"></i>
+                    <div class="phone-field-row">
+                        <button type="button" class="country-select-btn" id="regCountryBtn">
+                            <span id="regCountryFlag">🇺🇸</span>
+                            <span id="regCountryCode">+1</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="input-wrap" style="flex:1;">
+                            <input type="tel" class="form-input" id="regPhone" placeholder="555 123 4567" autocomplete="tel" required minlength="7" style="padding-left:16px;" />
+                            <i class="fa-solid fa-check input-check" id="regPhoneCheck"></i>
+                        </div>
+                    </div>
+                    <input type="hidden" id="regCountryDialCode" value="+1" />
+
+                    <div class="country-dropdown" id="regCountryDropdown">
+                        <div class="country-search-wrap">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" class="country-search" id="regCountrySearch" placeholder="Search country or code" />
+                        </div>
+                        <div class="country-list" id="regCountryList"></div>
                     </div>
                 </div>
 
@@ -648,6 +700,110 @@
             }
         }
 
+        /* ── Country dial-code data ── */
+        const COUNTRIES = [
+            ["US","+1","United States"],["CA","+1","Canada"],["GB","+44","United Kingdom"],
+            ["NG","+234","Nigeria"],["GH","+233","Ghana"],["KE","+254","Kenya"],["ZA","+27","South Africa"],
+            ["EG","+20","Egypt"],["MA","+212","Morocco"],["DZ","+213","Algeria"],["TN","+216","Tunisia"],
+            ["ET","+251","Ethiopia"],["TZ","+255","Tanzania"],["UG","+256","Uganda"],["RW","+250","Rwanda"],
+            ["SN","+221","Senegal"],["CI","+225","Ivory Coast"],["CM","+237","Cameroon"],["ZM","+260","Zambia"],
+            ["ZW","+263","Zimbabwe"],["BW","+267","Botswana"],["NA","+264","Namibia"],["MZ","+258","Mozambique"],
+            ["AO","+244","Angola"],["ML","+223","Mali"],["BF","+226","Burkina Faso"],["NE","+227","Niger"],
+            ["TD","+235","Chad"],["SO","+252","Somalia"],["SD","+249","Sudan"],["LY","+218","Libya"],
+            ["IE","+353","Ireland"],["FR","+33","France"],["DE","+49","Germany"],["ES","+34","Spain"],
+            ["PT","+351","Portugal"],["IT","+39","Italy"],["NL","+31","Netherlands"],["BE","+32","Belgium"],
+            ["CH","+41","Switzerland"],["AT","+43","Austria"],["SE","+46","Sweden"],["NO","+47","Norway"],
+            ["DK","+45","Denmark"],["FI","+358","Finland"],["IS","+354","Iceland"],["PL","+48","Poland"],
+            ["CZ","+420","Czech Republic"],["SK","+421","Slovakia"],["HU","+36","Hungary"],["RO","+40","Romania"],
+            ["BG","+359","Bulgaria"],["GR","+30","Greece"],["TR","+90","Turkey"],["UA","+380","Ukraine"],
+            ["RU","+7","Russia"],["BY","+375","Belarus"],["LT","+370","Lithuania"],["LV","+371","Latvia"],
+            ["EE","+372","Estonia"],["HR","+385","Croatia"],["RS","+381","Serbia"],["SI","+386","Slovenia"],
+            ["BA","+387","Bosnia and Herzegovina"],["AL","+355","Albania"],["MK","+389","North Macedonia"],
+            ["MT","+356","Malta"],["CY","+357","Cyprus"],["LU","+352","Luxembourg"],
+            ["CN","+86","China"],["JP","+81","Japan"],["KR","+82","South Korea"],["IN","+91","India"],
+            ["PK","+92","Pakistan"],["BD","+880","Bangladesh"],["LK","+94","Sri Lanka"],["NP","+977","Nepal"],
+            ["ID","+62","Indonesia"],["MY","+60","Malaysia"],["SG","+65","Singapore"],["PH","+63","Philippines"],
+            ["TH","+66","Thailand"],["VN","+84","Vietnam"],["KH","+855","Cambodia"],["MM","+95","Myanmar"],
+            ["HK","+852","Hong Kong"],["TW","+886","Taiwan"],["MN","+976","Mongolia"],
+            ["SA","+966","Saudi Arabia"],["AE","+971","United Arab Emirates"],["QA","+974","Qatar"],
+            ["KW","+965","Kuwait"],["BH","+973","Bahrain"],["OM","+968","Oman"],["JO","+962","Jordan"],
+            ["LB","+961","Lebanon"],["IQ","+964","Iraq"],["IR","+98","Iran"],["IL","+972","Israel"],
+            ["YE","+967","Yemen"],["SY","+963","Syria"],["AF","+93","Afghanistan"],["KZ","+7","Kazakhstan"],
+            ["UZ","+998","Uzbekistan"],["AZ","+994","Azerbaijan"],["GE","+995","Georgia"],["AM","+374","Armenia"],
+            ["AU","+61","Australia"],["NZ","+64","New Zealand"],["FJ","+679","Fiji"],["PG","+675","Papua New Guinea"],
+            ["BR","+55","Brazil"],["MX","+52","Mexico"],["AR","+54","Argentina"],["CO","+57","Colombia"],
+            ["CL","+56","Chile"],["PE","+51","Peru"],["VE","+58","Venezuela"],["EC","+593","Ecuador"],
+            ["BO","+591","Bolivia"],["PY","+595","Paraguay"],["UY","+598","Uruguay"],["GY","+592","Guyana"],
+            ["CR","+506","Costa Rica"],["PA","+507","Panama"],["GT","+502","Guatemala"],["HN","+504","Honduras"],
+            ["SV","+503","El Salvador"],["NI","+505","Nicaragua"],["CU","+53","Cuba"],["DO","+1","Dominican Republic"],
+            ["JM","+1","Jamaica"],["TT","+1","Trinidad and Tobago"],["BS","+1","Bahamas"],["BB","+1","Barbados"],
+            ["HT","+509","Haiti"],["PR","+1","Puerto Rico"],
+        ];
+        function flagEmoji(iso2) {
+            return iso2.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
+        }
+
+        /* ── Phone country dropdown ── */
+        (function setupCountryPicker() {
+            const btn      = document.getElementById('regCountryBtn');
+            const dropdown = document.getElementById('regCountryDropdown');
+            const search   = document.getElementById('regCountrySearch');
+            const list     = document.getElementById('regCountryList');
+            const flagEl   = document.getElementById('regCountryFlag');
+            const codeEl   = document.getElementById('regCountryCode');
+            const dialInp  = document.getElementById('regCountryDialCode');
+            if (!btn || !dropdown) return;
+
+            function renderList(filter) {
+                const q = (filter || '').trim().toLowerCase();
+                const filtered = COUNTRIES.filter(([iso2, code, name]) =>
+                    !q || name.toLowerCase().includes(q) || code.includes(q) || iso2.toLowerCase() === q
+                );
+                if (!filtered.length) {
+                    list.innerHTML = '<div class="country-list-empty">No countries found</div>';
+                    return;
+                }
+                list.innerHTML = filtered.map(([iso2, code, name]) => `
+                    <div class="country-item" data-iso2="${iso2}" data-code="${code}">
+                        <span class="flag">${flagEmoji(iso2)}</span>
+                        <span class="name">${name}</span>
+                        <span class="code">${code}</span>
+                    </div>
+                `).join('');
+            }
+
+            function openDropdown() {
+                renderList('');
+                dropdown.classList.add('open');
+                btn.classList.add('open');
+                search.value = '';
+                setTimeout(() => search.focus(), 10);
+            }
+            function closeDropdown() {
+                dropdown.classList.remove('open');
+                btn.classList.remove('open');
+            }
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.contains('open') ? closeDropdown() : openDropdown();
+            });
+            search.addEventListener('input', () => renderList(search.value));
+            search.addEventListener('click', (e) => e.stopPropagation());
+            list.addEventListener('click', (e) => {
+                const item = e.target.closest('.country-item');
+                if (!item) return;
+                flagEl.textContent = flagEmoji(item.dataset.iso2);
+                codeEl.textContent = item.dataset.code;
+                dialInp.value = item.dataset.code;
+                closeDropdown();
+                document.getElementById('regPhone').focus();
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && e.target !== btn) closeDropdown();
+            });
+        })();
+
         /* ── Password toggles ── */
         function setupPwToggle(inputId, toggleId) {
             const input = document.getElementById(inputId);
@@ -762,10 +918,12 @@
 
         /* ── Register handler ── */
         async function handleRegister() {
-            const name     = document.getElementById('regName').value.trim();
-            const email    = document.getElementById('regEmail').value.trim();
-            const phone    = document.getElementById('regPhone').value.trim();
-            const password = document.getElementById('regPassword').value;
+            const name      = document.getElementById('regName').value.trim();
+            const email     = document.getElementById('regEmail').value.trim();
+            const phoneLocal = document.getElementById('regPhone').value.trim();
+            const dialCode  = document.getElementById('regCountryDialCode').value;
+            const phone     = phoneLocal ? dialCode + ' ' + phoneLocal : '';
+            const password  = document.getElementById('regPassword').value;
             const terms    = document.getElementById('termsCheck').checked;
             const btn      = document.getElementById('registerBtn');
             const errBox   = document.getElementById('registerError');
