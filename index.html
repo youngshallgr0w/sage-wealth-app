@@ -211,7 +211,7 @@
         .country-select-btn:hover { border-color:var(--text-muted); }
         .country-select-btn.open { border-color:var(--red); background:#1f1f1f; }
         .country-select-btn i { font-size:0.65rem; color:var(--text-dim); }
-        .country-select-btn span:first-child { font-size:1.05rem; line-height:1; }
+        .country-select-btn img { width:20px; height:15px; object-fit:cover; border-radius:2px; display:block; }
 
         .country-dropdown {
             display:none; position:absolute; top:100%; left:0; margin-top:6px; width:100%;
@@ -232,7 +232,7 @@
             cursor:pointer; transition:background 0.15s ease;
         }
         .country-item:hover, .country-item.active { background:rgba(192,57,43,0.12); }
-        .country-item .flag { font-size:1.05rem; }
+        .country-item .flag { width:20px; height:15px; object-fit:cover; border-radius:2px; flex-shrink:0; }
         .country-item .name { flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .country-item .code { color:var(--text-muted); font-size:0.78rem; }
         .country-list-empty { padding:16px; text-align:center; color:var(--text-dim); font-size:0.8rem; }
@@ -542,7 +542,7 @@
                     <label class="input-label">Phone Number</label>
                     <div class="phone-field-row">
                         <button type="button" class="country-select-btn" id="regCountryBtn">
-                            <span id="regCountryFlag">🇺🇸</span>
+                            <img id="regCountryFlag" src="https://flagcdn.com/w40/us.png" alt="" />
                             <span id="regCountryCode">+1</span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </button>
@@ -739,8 +739,8 @@
             ["JM","+1","Jamaica"],["TT","+1","Trinidad and Tobago"],["BS","+1","Bahamas"],["BB","+1","Barbados"],
             ["HT","+509","Haiti"],["PR","+1","Puerto Rico"],
         ];
-        function flagEmoji(iso2) {
-            return iso2.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
+        function flagUrl(iso2) {
+            return 'https://flagcdn.com/w40/' + iso2.toLowerCase() + '.png';
         }
 
         /* ── Phone country dropdown ── */
@@ -765,7 +765,7 @@
                 }
                 list.innerHTML = filtered.map(([iso2, code, name]) => `
                     <div class="country-item" data-iso2="${iso2}" data-code="${code}">
-                        <span class="flag">${flagEmoji(iso2)}</span>
+                        <img class="flag" src="${flagUrl(iso2)}" alt="" />
                         <span class="name">${name}</span>
                         <span class="code">${code}</span>
                     </div>
@@ -793,7 +793,7 @@
             list.addEventListener('click', (e) => {
                 const item = e.target.closest('.country-item');
                 if (!item) return;
-                flagEl.textContent = flagEmoji(item.dataset.iso2);
+                flagEl.src = flagUrl(item.dataset.iso2);
                 codeEl.textContent = item.dataset.code;
                 dialInp.value = item.dataset.code;
                 closeDropdown();
