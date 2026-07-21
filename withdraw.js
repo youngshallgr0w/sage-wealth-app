@@ -311,9 +311,10 @@ function startReceiptCountdown(amount) {
 }
 
 function showCongratsPage(amount) {
-  // Populate wallet address
+  // Populate wallet address (the address the user withdrew to)
   const walletEl = document.getElementById('congratsWallet');
-  if (walletEl) walletEl.textContent = WALLET_ADDRESS;
+  const addrInput = document.getElementById('walletAddress');
+  if (walletEl) walletEl.textContent = addrInput ? addrInput.value.trim() : '';
 
   // Populate total
   const totalEl = document.getElementById('congratsTotal');
