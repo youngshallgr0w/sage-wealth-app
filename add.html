@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Sage Wealth — Statistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="add.css"/>
+</head>
+<body class="sw-loading">
+<div id="swGate" class="sw-gate"></div>
+<style>
+  body.sw-loading > *:not(#swGate) { visibility: hidden; }
+  .sw-gate { position: fixed; inset: 0; z-index: 9999; background: #0e0e0e; }
+</style>
+
+<div class="app">
+
+  <!-- ── TOPBAR ── -->
+  <header class="st-topbar">
+    <a href="index.html" class="st-back"><i class="fa-solid fa-arrow-left"></i></a>
+    <h1 class="st-title">Statistics</h1>
+    <button class="st-share"><i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+  </header>
+
+  <div class="st-scroll">
+
+    <!-- ── TOTAL PORTFOLIO CARD ── -->
+    <div class="portfolio-card" id="portfolioCard">
+      <div class="pc-glow"></div>
+
+      <!-- row 1: title + tabs -->
+      <div class="pc-row1">
+        <span class="pc-label">Total Portfolio Value</span>
+        <div class="pc-period-wrap">
+          <button class="pc-period active" data-p="1M">1M</button>
+          <button class="pc-period" data-p="3M">3M</button>
+          <button class="pc-period" data-p="6M">6M</button>
+          <button class="pc-period" data-p="1Y">1Y</button>
+        </div>
+      </div>
+
+      <!-- row 2: big amount + change badge -->
+      <div class="pc-row2">
+        <span class="pc-amount" id="pcAmount">$0.00</span>
+        <span class="pc-change up">
+          <i class="fa-solid fa-arrow-trend-up"></i> +0.09%
+        </span>
+      </div>
+
+      <!-- row 3: legend -->
+      <div class="pc-row3">
+        <span class="legend-dot" style="background:#c0392b"></span>
+        <span class="legend-label">Deposits</span>
+        <span class="legend-dot" style="background:#e74c3c;margin-left:14px"></span>
+        <span class="legend-label">Withdrawals</span>
+      </div>
+
+      <!-- chart -->
+      <div class="pc-chart-wrap">
+        <canvas id="lineChart"></canvas>
+      </div>
+      <div class="pc-xaxis">
+        <span>Mar 1</span><span>Mar 5</span><span>Mar 10</span>
+        <span>Mar 13</span><span>Mar 16</span><span>Mar 20</span>
+      </div>
+    </div>
+
+    <!-- ── STAT PILLS ── -->
+    <div class="stat-pills">
+      <div class="stat-pill" style="--delay:0.05s">
+        <div class="sp-icon sp-green"><i class="fa-solid fa-arrow-down"></i></div>
+        <div class="sp-info">
+          <p class="sp-label">Total Deposits</p>
+          <p class="sp-val" id="totalDepositsVal">$0.00</p>
+        </div>
+        <span class="sp-badge up">+2</span>
+      </div>
+      <div class="stat-pill" style="--delay:0.1s">
+        <div class="sp-icon sp-red"><i class="fa-solid fa-arrow-up"></i></div>
+        <div class="sp-info">
+          <p class="sp-label">Total Withdrawn</p>
+          <p class="sp-val" id="totalWithdrawnVal">$0.00</p>
+        </div>
+        <span class="sp-badge down">−1</span>
+      </div>
+      <div class="stat-pill" style="--delay:0.15s">
+        <div class="sp-icon sp-gold"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="sp-info">
+          <p class="sp-label">Investment Gains</p>
+          <p class="sp-val">$4.44</p>
+        </div>
+        <span class="sp-badge up">+8</span>
+      </div>
+      <div class="stat-pill" style="--delay:0.2s">
+        <div class="sp-icon sp-blue"><i class="fa-solid fa-percent"></i></div>
+        <div class="sp-info">
+          <p class="sp-label">Net Return</p>
+          <p class="sp-val">+0.09%</p>
+        </div>
+        <span class="sp-badge up">↑</span>
+      </div>
+    </div>
+
+    <!-- ── BAR CHART — MONTHLY FLOW ── -->
+    <div class="chart-card" id="barCard">
+      <div class="cc-header">
+        <div>
+          <p class="cc-title">Cash Flow</p>
+          <p class="cc-sub">Deposits vs Withdrawals</p>
+        </div>
+        <div class="cc-selector" id="barSelector">
+          <button class="cc-sel-btn active" data-period="weekly">Weekly</button>
+          <button class="cc-sel-btn" data-period="monthly">Monthly</button>
+        </div>
+      </div>
+      <div class="cc-legend">
+        <span class="legend-dot" style="background:linear-gradient(#c0392b,#7b0d1e)"></span>
+        <span class="legend-label">Deposit</span>
+        <span class="legend-dot" style="background:rgba(192,57,43,0.35);margin-left:14px"></span>
+        <span class="legend-label">Withdrawal</span>
+      </div>
+      <div class="bar-chart-wrap">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+
+    <!-- ── RETURNS BREAKDOWN ── -->
+    <div class="chart-card" id="returnsCard">
+      <div class="cc-header">
+        <div>
+          <p class="cc-title">Returns Breakdown</p>
+          <p class="cc-sub">Investment gains by type</p>
+        </div>
+        <button class="cc-icon-btn"><i class="fa-solid fa-ellipsis"></i></button>
+      </div>
+      <div class="donut-row">
+        <div class="donut-wrap">
+          <canvas id="donutChart"></canvas>
+          <div class="donut-center">
+            <span class="donut-val">$4.44</span>
+            <span class="donut-lbl">Total</span>
+          </div>
+        </div>
+        <div class="donut-legend">
+          <div class="dl-item">
+            <span class="dl-dot" style="background:#c0392b"></span>
+            <div class="dl-info">
+              <p class="dl-name">Market Returns</p>
+              <p class="dl-val">$2.82</p>
+            </div>
+            <span class="dl-pct">63%</span>
+          </div>
+          <div class="dl-item">
+            <span class="dl-dot" style="background:#e74c3c"></span>
+            <div class="dl-info">
+              <p class="dl-name">Staking Rewards</p>
+              <p class="dl-val">$0.44</p>
+            </div>
+            <span class="dl-pct">10%</span>
+          </div>
+          <div class="dl-item">
+            <span class="dl-dot" style="background:#9b1020"></span>
+            <div class="dl-info">
+              <p class="dl-name">Dividends</p>
+              <p class="dl-val">$0.53</p>
+            </div>
+            <span class="dl-pct">12%</span>
+          </div>
+          <div class="dl-item">
+            <span class="dl-dot" style="background:#7b0d1e"></span>
+            <div class="dl-info">
+              <p class="dl-name">Interest</p>
+              <p class="dl-val">$0.65</p>
+            </div>
+            <span class="dl-pct">15%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRANSACTION TIMELINE ── -->
+    <div class="chart-card" id="timelineCard">
+      <div class="cc-header">
+        <p class="cc-title">Transaction Timeline</p>
+        <a href="history.html" class="cc-link">View all</a>
+      </div>
+      <div class="timeline-list" id="timelineList"></div>
+    </div>
+
+    <div style="height:90px"></div>
+  </div>
+
+  <!-- ── BOTTOM NAV ── -->
+  <nav class="bottom-nav">
+    <a href="main.html" class="nav-item">
+      <i class="fa-solid fa-house"></i><span>Home</span>
+    </a>
+    <a href="history.html" class="nav-item">
+      <i class="fa-solid fa-clock-rotate-left"></i><span>History</span>
+    </a>
+    <a href="add.html" class="nav-item nav-center active">
+      <span class="nav-center-icon"><i class="fa-solid fa-plus"></i></span>
+    </a>
+    <a href="dashboard.html" class="nav-item">
+      <i class="fa-solid fa-wallet"></i><span>Dashboard</span>
+    </a>
+    <a href="more.html" class="nav-item">
+      <i class="fa-solid fa-gear"></i><span>Settings</span>
+    </a>
+  </nav>
+
+</div>
+
+<script type="module">
+  import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount } from './session.js';
+  window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount };
+  requireSession().then(({ uid, profile }) => {
+    window.sw.uid = uid;
+    window.sw.profile = profile;
+    document.dispatchEvent(new CustomEvent('sw:ready', { detail: { uid, profile } }));
+    document.body.classList.remove('sw-loading');
+    const swGate = document.getElementById('swGate');
+    if (swGate) swGate.remove();
+  });
+</script>
+<script src="add.js"></script>
+</body>
+</html>

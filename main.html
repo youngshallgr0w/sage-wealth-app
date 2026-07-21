@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sage Wealth Investment</title>
+
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'><rect width='48' height='48' rx='12' fill='%23111111'/><circle cx='24' cy='24' r='20' stroke='%23c0392b' stroke-width='2'/><path d='M14 30 Q24 10 34 30' stroke='%23c0392b' stroke-width='2.5' fill='none' stroke-linecap='round'/><circle cx='24' cy='30' r='3' fill='%23c0392b'/></svg>" />
+  <link rel="stylesheet" href="main.css" />
+  <link rel="preload" as="image" href="sage-wealth-card-optimized.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://kit.fontawesome.com/3acc343030.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+  <!-- ════════════ LOADER ════════════ -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-logo">
+        <svg class="loader-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="#c0392b" stroke-width="2" />
+          <path d="M14 30 Q24 10 34 30" stroke="#c0392b" stroke-width="2.5" fill="none" stroke-linecap="round" />
+          <circle cx="24" cy="30" r="3" fill="#c0392b" />
+        </svg>
+        <span class="loader-brand">Sage Wealth</span>
+      </div>
+      <div class="loader-bar-track">
+        <div class="loader-bar"></div>
+      </div>
+      <p class="loader-tagline">Securing your future…</p>
+    </div>
+  </div>
+
+  <!-- ════════════ APP ════════════ -->
+  <div id="app" class="hidden">
+
+    <section class="page active" id="page-home">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="avatar-wrap">
+            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23222'/><circle cx='50' cy='38' r='18' fill='%23444'/><ellipse cx='50' cy='88' rx='32' ry='24' fill='%23444'/></svg>" alt="User" class="avatar" id="topbarAvatar" />
+            <span class="avatar-dot"></span>
+          </div>
+          <div class="topbar-text">
+            <span class="greeting">Welcome Back,</span>
+            <span class="username"></span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="logo-mark">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="19" stroke="#c0392b" stroke-width="1.5" />
+              <path d="M10 26 Q20 8 30 26" stroke="#c0392b" stroke-width="2" fill="none" stroke-linecap="round" />
+              <circle cx="20" cy="26" r="2.5" fill="#c0392b" />
+            </svg>
+            <span>SW</span>
+          </div>
+          <button class="icon-btn notif-btn" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="scroll-body">
+
+        <!-- Balance Card -->
+        <div class="card-wrap">
+          <div class="balance-card">
+            <div class="card-shimmer"></div>
+            <div class="card-header-row">
+              <button class="show-info-btn" id="toggleBalance">
+                <i class="fa-regular fa-eye" id="eyeIcon"></i>
+                <span>Show info</span>
+              </button>
+            </div>
+            <div class="card-content-wrap">
+              <div class="balance-label-wrap">
+                <p class="balance-label">total Available Balance</p>
+              </div>
+              <div class="card-balance-section">
+                <h2 class="balance-amount" id="balanceAmount">$0.00</h2>
+              </div>
+              <div class="card-footer-row">
+                <div class="card-detail">
+                  <span class="card-detail-label">ACCOUNT NO.</span>
+                  <span class="card-detail-value">•••• 9891</span>
+                </div>
+                <div class="card-detail">
+                  <span class="card-detail-label"></span>
+                  <span class="card-detail-value"></span>
+                </div>
+                <div class="card-detail">
+                  <span class="card-detail-label"></span>
+                  <span class="card-detail-value"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ACTION BUTTONS ── -->
+        <div class="action-stack">
+          <button class="stack-btn withdraw-stack-btn" id="withdrawBtn">
+            <span class="stack-btn-left">
+              <span class="stack-icon withdraw-icon"><i class="fa-solid fa-paper-plane"></i></span>
+              <span class="stack-label">Withdraw</span>
+            </span>
+            <i class="fa-solid fa-chevron-right stack-chevron"></i>
+          </button>
+          <button class="stack-btn deposit-stack-btn" id="depositBtn">
+            <span class="stack-btn-left">
+              <span class="stack-icon deposit-icon"><i class="fa-solid fa-circle-down"></i></span>
+              <span class="stack-label">Deposit</span>
+            </span>
+            <i class="fa-solid fa-chevron-right stack-chevron"></i>
+          </button>
+        </div>
+
+        <!-- ── LIVE ACTIVITY TICKER ── -->
+        <div class="ticker-wrap">
+          <span class="live-dot"></span>
+          <span class="live-text">LIVE</span>
+          <div class="ticker-scroll" id="tickerScroll">
+            <div class="ticker-inner" id="tickerInner"></div>
+          </div>
+        </div>
+
+        <!-- Operations -->
+        <div class="operations-panel">
+          <div class="ops-header">
+            <h3 class="ops-title">LIVE Investment</h3>
+            <button class="full-records-btn">Full records</button>
+          </div>
+
+          <div class="ops-group" id="todayGroup">
+            <p class="ops-date">TODAY</p>
+
+            <div class="ops-item" data-type="debit">
+              <div class="ops-icon-wrap">
+                <img src="https://flagcdn.com/w20/us.png" alt="US" class="flag-img" />
+              </div>
+              <div class="ops-info">
+                <span class="ops-name">Jessica Monroe</span>
+                <span class="ops-sub">New York, USA · Deposit</span>
+              </div>
+              <div class="ops-amount-wrap">
+                <span class="ops-amount debit">+$5,432.00</span>
+                <span class="ops-time">2:15 PM</span>
+              </div>
+            </div>
+
+            <div class="ops-item" data-type="credit">
+              <div class="ops-icon-wrap">
+                <img src="https://flagcdn.com/w20/gb.png" alt="GB" class="flag-img" />
+              </div>
+              <div class="ops-info">
+                <span class="ops-name">Oliver Hartley</span>
+                <span class="ops-sub">London, UK · Withdraw</span>
+              </div>
+              <div class="ops-amount-wrap">
+                <span class="ops-amount credit">-$1,200.00</span>
+                <span class="ops-time">1:48 PM</span>
+              </div>
+            </div>
+
+            <div class="ops-item" data-type="debit">
+              <div class="ops-icon-wrap">
+                <img src="https://flagcdn.com/w20/cn.png" alt="CN" class="flag-img" />
+              </div>
+              <div class="ops-info">
+                <span class="ops-name">Wei Zhang</span>
+                <span class="ops-sub">Shanghai, China · Deposit</span>
+              </div>
+              <div class="ops-amount-wrap">
+                <span class="ops-amount debit">+$870.50</span>
+                <span class="ops-time">11:22 AM</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ops-group">
+            <p class="ops-date">YESTERDAY</p>
+
+            <div class="ops-item" data-type="credit">
+              <div class="ops-icon-wrap">
+                <img src="https://flagcdn.com/w20/de.png" alt="DE" class="flag-img" />
+              </div>
+              <div class="ops-info">
+                <span class="ops-name">Klaus Müller</span>
+                <span class="ops-sub">Berlin, Germany · Withdraw</span>
+              </div>
+              <div class="ops-amount-wrap">
+                <span class="ops-amount credit">-$540.00</span>
+                <span class="ops-time">6:30 PM</span>
+              </div>
+            </div>
+
+            <div class="ops-item" data-type="debit">
+              <div class="ops-icon-wrap">
+                <img src="https://flagcdn.com/w20/ca.png" alt="CA" class="flag-img" />
+              </div>
+              <div class="ops-info">
+                <span class="ops-name">Liam Tremblay</span>
+                <span class="ops-sub">Toronto, Canada · Deposit</span>
+              </div>
+              <div class="ops-amount-wrap">
+                <span class="ops-amount debit">+$320.00</span>
+                <span class="ops-time">12:45 PM</span>
+              </div>
+            </div>
+
+            <div class="ops-item" data-type="debit">
+              <div class="ops-icon-wrap">
+                <img src="https://flagcdn.com/w20/au.png" alt="AU" class="flag-img" />
+              </div>
+              <div class="ops-info">
+                <span class="ops-name">Sophie Carter</span>
+                <span class="ops-sub">Sydney, Australia · Deposit</span>
+              </div>
+              <div class="ops-amount-wrap">
+                <span class="ops-amount debit">+$1,050.00</span>
+                <span class="ops-time">10:22 AM</span>
+              </div>
+            </div>
+
+            <div class="ops-item" data-type="credit">
+              <div class="ops-icon-wrap">
+                <img src="https://flagcdn.com/w20/jp.png" alt="JP" class="flag-img" />
+              </div>
+              <div class="ops-info">
+                <span class="ops-name">Kenji Tanaka</span>
+                <span class="ops-sub">Tokyo, Japan · Withdraw</span>
+              </div>
+              <div class="ops-amount-wrap">
+                <span class="ops-amount credit">-$780.00</span>
+                <span class="ops-time">9:05 AM</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div style="height:100px"></div>
+      </div><!-- end scroll-body -->
+    </section>
+
+    <!-- ══ BOTTOM NAV ══ -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" id="navHome">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </button>
+      <a href="history.html" class="nav-item">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>History</span>
+      </a>
+      <a href="add.html" class="nav-item nav-center">
+        <span class="nav-center-icon"><i class="fa-solid fa-plus"></i></span>
+      </a>
+      <a href="dashboard.html" class="nav-item">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="more.html" class="nav-item">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+  </div><!-- end #app -->
+
+  <!-- ══ DEPOSIT MODAL ══ -->
+  <div class="modal-overlay hidden" id="depositModal">
+    <div class="modal-box">
+      <button class="modal-close" id="closeDeposit"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-icon deposit"><i class="fa-solid fa-arrow-down-to-line"></i></div>
+      <h3 class="modal-title">Deposit Funds</h3>
+      <p class="modal-sub">Enter the amount you'd like to deposit</p>
+      <input type="number" class="modal-input" id="depositAmount" placeholder="$0.00" min="1" />
+      <button class="modal-confirm-btn" id="confirmDeposit">Confirm Deposit</button>
+    </div>
+  </div>
+
+  <!-- ══ WITHDRAW MODAL ══ -->
+  <div class="modal-overlay hidden" id="withdrawModal">
+    <div class="modal-box">
+      <button class="modal-close" id="closeWithdraw"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-icon withdraw"><i class="fa-solid fa-arrow-up-from-line"></i></div>
+      <h3 class="modal-title">Withdraw Funds</h3>
+      <p class="modal-sub">Enter the amount you'd like to withdraw</p>
+      <input type="number" class="modal-input" id="withdrawAmount" placeholder="$0.00" min="1" />
+      <button class="modal-confirm-btn withdraw-confirm" id="confirmWithdraw">Confirm Withdraw</button>
+    </div>
+  </div>
+
+  <!-- ══ TOAST ══ -->
+  <div class="toast hidden" id="toast">
+    <i class="fa-solid fa-circle-check toast-icon"></i>
+    <span id="toastMsg">Action successful</span>
+  </div>
+
+  <script type="module">
+    import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount } from './session.js';
+    window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount };
+    requireSession().then(({ uid, profile }) => {
+      window.sw.uid = uid;
+      window.sw.profile = profile;
+      document.dispatchEvent(new CustomEvent('sw:ready', { detail: { uid, profile } }));
+    });
+  </script>
+  <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account Verification</title>
+
+<style>
+
+:root{
+    --primary:#C0392B;
+    --bg:#0A0F17;
+    --card:#1A1A1A;
+    --green:#16a34a;
+    --text:#ffffff;
+    --muted:#b0b0b0;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,Segoe UI,sans-serif;
+}
+
+body{
+    background:var(--bg);
+    padding:20px 12px;
+    color:var(--text);
+}
+
+.container{
+    max-width:850px;
+    margin:auto;
+}
+
+.card{
+    background:var(--card);
+    border-radius:24px;
+    padding:30px;
+    box-shadow:0 15px 40px rgba(0,0,0,.4);
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.timeline{
+    position:relative;
+}
+
+.timeline-steps{
+    position:relative;
+    overflow:hidden;
+}
+
+.line{
+    position:absolute;
+    left:28px;
+    top:0;
+    width:4px;
+    height:0;
+    background:var(--green);
+    border-radius:10px;
+    transition:height 3s linear;
+}
+
+.step{
+    display:flex;
+    gap:20px;
+    position:relative;
+    margin-bottom:35px;
+}
+
+.icon{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    border:3px solid #444;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#222;
+    font-size:24px;
+    flex-shrink:0;
+    transition:.4s;
+}
+
+.icon.completed{
+    background:var(--green);
+    color:white;
+    border-color:var(--green);
+    animation:pop .6s ease;
+}
+
+.content{
+    flex:1;
+}
+
+.content h2{
+    font-size:26px;
+    margin-bottom:8px;
+    color:var(--text);
+}
+
+.content p{
+    font-size:15px;
+    line-height:1.7;
+    color:var(--muted);
+}
+
+.highlight{
+    color:var(--primary);
+}
+
+.hidden{
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(25px);
+    max-height:0;
+    overflow:hidden;
+    transition:.8s ease;
+}
+
+.show{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+    max-height:1000px;
+}
+
+.notice{
+    background:rgba(192,57,43,.08);
+    border:1px solid rgba(192,57,43,.35);
+    border-radius:18px;
+    padding:20px;
+    display:flex;
+    gap:15px;
+    align-items:flex-start;
+}
+
+.notice-icon{
+    font-size:30px;
+    color:var(--primary);
+}
+
+.continue-btn{
+    display:block;
+    width:100%;
+    margin-top:20px;
+    padding:16px;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:13px;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.3px;
+    cursor:pointer;
+    box-shadow:0 8px 24px rgba(192,57,43,.4);
+    transition:background .3s ease, transform .2s ease, box-shadow .3s ease;
+}
+
+.continue-btn:hover{
+    background:#e74c3c;
+    box-shadow:0 12px 32px rgba(192,57,43,.55);
+}
+
+.continue-btn:active{
+    transform:scale(.97);
+}
+
+@keyframes pop{
+    0%{
+        transform:scale(.5);
+    }
+    70%{
+        transform:scale(1.2);
+    }
+    100%{
+        transform:scale(1);
+    }
+}
+
+/* Tablet */
+
+@media(max-width:768px){
+
+    .card{
+        padding:20px;
+    }
+
+    .content h2{
+        font-size:22px;
+    }
+
+    .content p{
+        font-size:14px;
+    }
+
+    .icon{
+        width:48px;
+        height:48px;
+        font-size:20px;
+    }
+
+    .line{
+        left:22px;
+    }
+}
+
+/* Mobile */
+
+@media(max-width:480px){
+
+    body{
+        padding:15px 10px;
+    }
+
+    .card{
+        padding:15px;
+        border-radius:18px;
+    }
+
+    .step{
+        gap:12px;
+        margin-bottom:25px;
+    }
+
+    .icon{
+        width:40px;
+        height:40px;
+        font-size:18px;
+    }
+
+    .line{
+        left:18px;
+    }
+
+    .content h2{
+        font-size:18px;
+    }
+
+    .content p{
+        font-size:13px;
+        line-height:1.6;
+    }
+
+    .notice h2{
+        font-size:18px !important;
+    }
+
+    .notice p{
+        font-size:13px;
+    }
+
+    .notice-icon{
+        font-size:24px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<div class="timeline">
+
+<div class="timeline-steps">
+
+<div class="line" id="line"></div>
+
+<!-- STEP 1 -->
+
+<div class="step">
+
+    <div class="icon completed">✓</div>
+
+    <div class="content">
+        <h2>Account Verification</h2>
+        <p>Your details have been verified.</p>
+    </div>
+
+</div>
+
+<!-- STEP 2 -->
+
+<div class="step hidden" id="step2">
+
+    <div class="icon" id="icon2">✓</div>
+
+    <div class="content">
+        <h2><span class="highlight">Next:</span>Eligibility</h2>
+
+        <p>
+            Your account has been successfully created and fully verified.
+            You may now proceed to your dashboard to review and access your available funds.
+        </p>
+    </div>
+
+</div>
+
+<!-- STEP 3 -->
+
+<div class="step hidden" id="step3">
+
+    <div class="icon" id="icon3">✓</div>
+
+    <div class="content">
+        <h2>Account Verified</h2>
+
+        <p>
+            Your account has been approved.
+            You can now proceed to your dashboard to access and manage your available funds.
+        </p>
+    </div>
+
+</div>
+
+<!-- STEP 4 -->
+
+<div class="step hidden" id="step4">
+
+    <div class="icon" id="icon4">✓</div>
+
+    <div class="content">
+        <h2>Dashboard Access Granted</h2>
+
+        <p>
+            Your account setup process has been completed successfully.
+            Dashboard access has been granted and all account services are now available.
+        </p>
+    </div>
+
+</div>
+
+<!-- STEP 5 -->
+
+<div class="step hidden" id="step5">
+
+    <div class="icon" id="icon5">✓</div>
+
+    <div class="content">
+        <h2>Welcome</h2>
+
+        <p>
+           Welcome to Sage Wealth
+        </p>
+    </div>
+
+</div>
+
+</div>
+
+<!-- STEP 6 -->
+
+<div class="hidden" id="step6">
+
+    <div class="notice">
+
+        <div class="notice-icon">ⓘ</div>
+
+        <div>
+            <h2 style="color:#C0392B;margin-bottom:10px;">
+                Important Notice
+            </h2>
+
+            <p>
+                Please maintain a minimum account balance of $10 after any withdrawal.
+            </p>
+        </div>
+
+    </div>
+
+    <button class="continue-btn" id="continueBtn">Continue to Dashboard</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const step2 = document.getElementById("step2");
+const step3 = document.getElementById("step3");
+const step4 = document.getElementById("step4");
+const step5 = document.getElementById("step5");
+const step6 = document.getElementById("step6");
+
+const icon2 = document.getElementById("icon2");
+const icon3 = document.getElementById("icon3");
+const icon4 = document.getElementById("icon4");
+const icon5 = document.getElementById("icon5");
+
+const line = document.getElementById("line");
+
+function delay(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function startProcess(){
+
+    line.style.height = "120px";
+
+    await delay(3000);
+
+    step2.classList.add("show");
+    icon2.classList.add("completed");
+    line.style.height = "260px";
+
+    await delay(3000);
+
+    step3.classList.add("show");
+    icon3.classList.add("completed");
+    line.style.height = "420px";
+
+    await delay(3000);
+
+    step4.classList.add("show");
+    icon4.classList.add("completed");
+    line.style.height = "580px";
+
+    await delay(3000);
+
+    step5.classList.add("show");
+    icon5.classList.add("completed");
+    line.style.height = "740px";
+
+    await delay(3000);
+
+    step6.classList.add("show");
+}
+
+</script>
+
+<script type="module">
+
+import { requireSession } from './session.js';
+
+requireSession().then(() => {
+    startProcess();
+});
+
+document.getElementById("continueBtn").addEventListener("click", () => {
+    sessionStorage.setItem("sw_show_welcome", "1");
+    window.location.href = "index.html";
+});
+
+</script>
+
+</body>
+</html>

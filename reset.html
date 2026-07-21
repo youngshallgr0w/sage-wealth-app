@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Resetting...</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .ring {
+      width: 48px; height: 48px;
+      border: 3px solid #2a2a2a;
+      border-top-color: #c0392b;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    p {
+      color: #555;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="ring"></div>
+  <p>Resetting account…</p>
+  <script>
+    // Clear every Sage Wealth key from localStorage
+    const keys = ['sw_balance', 'sw_deduction', 'sw_html_balance',
+                  'sw_notifications', 'sw_pending_notif'];
+    keys.forEach(k => localStorage.removeItem(k));
+
+    // Redirect back to home after a short pause
+    setTimeout(() => { window.location.href = 'index.html'; }, 800);
+  </script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Sage Wealth — Withdraw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="withdraw.css" />
+</head>
+
+<body class="sw-loading">
+<div id="swGate" class="sw-gate"></div>
+<style>
+  body.sw-loading > *:not(#swGate) { visibility: hidden; }
+  .sw-gate { position: fixed; inset: 0; z-index: 9999; background: #0e0e0e; }
+</style>
+
+  <div class="app">
+    <div class="phone-frame">
+
+      <!-- ══ PAGE 1: SEND FORM ══ -->
+      <div class="page active" id="page-form">
+
+        <header class="wd-topbar">
+          <a href="main.html" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </a>
+          <h1 class="wd-title">Withdraw Funds</h1>
+          <div class="wd-topbar-spacer"></div>
+        </header>
+
+        <div class="wd-scroll">
+
+          <!-- BALANCE CHIP -->
+          <div class="balance-chip">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Available: <strong id="availBalDisplay">$0.00</strong></span>
+          </div>
+
+          <!-- NETWORK SELECT -->
+          <div class="wd-section-label">Select Network</div>
+          <div class="network-row">
+            <button class="network-pill active" data-net="USDT">
+              <span class="net-icon usdt-icon">₮</span>
+              <span>USDT</span>
+              <span class="net-sub">TRC20</span>
+            </button>
+            <button class="network-pill" data-net="BTC">
+              <span class="net-icon btc-icon">₿</span>
+              <span>BTC</span>
+              <span class="net-sub">Bitcoin</span>
+            </button>
+          </div>
+
+          <!-- ADDRESS FIELD -->
+          <div class="wd-section-label">Withdrawal Address</div>
+          <div class="address-field">
+            <input class="address-input" id="walletAddress" type="text" placeholder="Enter your wallet address"
+              autocomplete="off"
+              style="background:transparent;border:none;outline:none;color:#f0f0f0;font-size:0.85rem;width:100%;font-family:inherit;" />
+            <button class="copy-btn" id="copyAddressBtn" title="Copy address">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+          <p class="address-note">
+            <i class="fa-solid fa-circle-info"></i>
+            This is your designated withdrawal wallet. Funds will be sent to this address.
+          </p>
+
+          <!-- AMOUNT FIELD -->
+          <div class="wd-section-label">Withdrawal Amount</div>
+          <div class="amount-field">
+            <input type="text" inputmode="decimal" class="amount-input" id="withdrawAmount" placeholder="0.00" />
+            <div class="amount-right">
+              <span class="amount-coin" id="coinLabel">USDT</span>
+              <button class="max-btn" id="maxBtn">Max</button>
+            </div>
+          </div>
+
+          <!-- NETWORK INFO BOX -->
+          <div class="network-info-box" id="networkInfoBox">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>The network you have selected is <strong id="netNameInBox">TRC20</strong>. Ensure that the withdrawal
+              address supports this network. Transactions cannot be cancelled.</p>
+          </div>
+
+          <!-- WITHDRAW BUTTON -->
+          <button class="wd-btn" id="withdrawBtn">
+            <i class="fa-solid fa-paper-plane"></i>
+            Withdraw
+          </button>
+
+        </div>
+      </div>
+      <!-- END PAGE 1 -->
+
+
+      <!-- ══ PAGE 2: CONFIRM ORDER ══ -->
+      <div class="page" id="page-confirm">
+
+        <header class="wd-topbar">
+          <button class="back-btn" id="backToForm">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <h1 class="wd-title">Confirm Order</h1>
+          <button class="close-btn" id="closeConfirm">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </header>
+
+        <div class="wd-scroll confirm-scroll">
+
+          <div class="confirm-you-receive">Amount</div>
+          <div class="confirm-big-amount">
+            <span id="confirmNetAmt">0.00</span>
+            <span class="confirm-coin" id="confirmCoin">USDT</span>
+          </div>
+          <div class="confirm-usd-equiv" id="confirmUsdEquiv">≈ $0.00</div>
+
+          <!-- DETAILS CARD -->
+          <div class="confirm-card">
+            <div class="confirm-row">
+              <span class="confirm-row-label">Address</span>
+              <span class="confirm-row-val addr-val"></span>
+            </div>
+            <div class="confirm-row">
+              <span class="confirm-row-label">Network</span>
+              <span class="confirm-row-val" id="confirmNetwork">Tron (TRC20)</span>
+            </div>
+            <div class="confirm-row">
+              <span class="confirm-row-label">Source</span>
+              <span class="confirm-row-val">Spot Wallet</span>
+            </div>
+            <div class="confirm-divider"></div>
+            <div class="confirm-row">
+              <span class="confirm-row-label">Coin</span>
+              <span class="confirm-row-val" id="confirmCoinRow">USDT</span>
+            </div>
+            <div class="confirm-row">
+              <span class="confirm-row-label">Amount</span>
+              <span class="confirm-row-val" id="confirmAmtRow">0 USDT</span>
+            </div>
+          </div>
+
+          <p class="confirm-warning">
+            <i class="fa-solid fa-circle-info"></i>
+            Ensure that the address is correct and on the same network. Transactions cannot be cancelled.
+          </p>
+
+          <button class="confirm-btn" id="confirmWithdrawBtn">
+            <span id="confirmBtnText">Confirm</span>
+          </button>
+
+        </div>
+      </div>
+      <!-- END PAGE 2 -->
+
+
+      <!-- ══ PAGE 2.5: PIN ENTRY ══ -->
+      <div class="page" id="page-pin">
+
+        <header class="wd-topbar">
+          <button class="back-btn" id="backToConfirm">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <h1 class="wd-title">Enter PIN</h1>
+          <div class="wd-topbar-spacer"></div>
+        </header>
+
+        <div class="wd-scroll pin-scroll">
+
+          <div class="pin-header">
+            <div class="pin-shield">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <p class="pin-title">Security Verification</p>
+            <p class="pin-sub">Enter your 4-digit withdrawal PIN to authorize this transaction</p>
+          </div>
+
+          <!-- PIN DOTS -->
+          <div class="pin-dots-row">
+            <div class="pin-dot" id="pd0"></div>
+            <div class="pin-dot" id="pd1"></div>
+            <div class="pin-dot" id="pd2"></div>
+            <div class="pin-dot" id="pd3"></div>
+          </div>
+
+          <!-- ERROR MSG -->
+          <div class="pin-error hidden" id="pinError">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span id="pinErrorMsg">Incorrect PIN. Please try again.</span>
+          </div>
+
+          <!-- KEYPAD -->
+          <div class="pin-keypad">
+            <button class="key-btn" data-val="1">1</button>
+            <button class="key-btn" data-val="2">2<span class="key-sub">ABC</span></button>
+            <button class="key-btn" data-val="3">3<span class="key-sub">DEF</span></button>
+            <button class="key-btn" data-val="4">4<span class="key-sub">GHI</span></button>
+            <button class="key-btn" data-val="5">5<span class="key-sub">JKL</span></button>
+            <button class="key-btn" data-val="6">6<span class="key-sub">MNO</span></button>
+            <button class="key-btn" data-val="7">7<span class="key-sub">PQRS</span></button>
+            <button class="key-btn" data-val="8">8<span class="key-sub">TUV</span></button>
+            <button class="key-btn" data-val="9">9<span class="key-sub">WXYZ</span></button>
+            <div class="key-empty"></div>
+            <button class="key-btn" data-val="0">0</button>
+            <button class="key-btn key-del" id="keyDel">
+              <i class="fa-solid fa-delete-left"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+      <!-- END PAGE 2.5 -->
+
+      <!-- ══ PAGE 3: WITHDRAWAL DETAILS (RECEIPT) ══ -->
+      <div class="page" id="page-receipt">
+
+        <header class="wd-topbar">
+          <a href="main.html" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </a>
+          <h1 class="wd-title">Withdrawal details</h1>
+          <div class="wd-topbar-spacer"></div>
+        </header>
+
+        <div class="wd-scroll receipt-scroll">
+
+          <!-- AMOUNT -->
+          <div class="receipt-top">
+            <p class="receipt-amount-label">Amount</p>
+            <div class="receipt-big-amount">
+              <span class="receipt-minus">−</span>
+              <span id="receiptAmount">0.00</span>
+              <span class="receipt-coin" id="receiptCoin">USDT</span>
+            </div>
+          </div>
+
+          <!-- TIMELINE -->
+          <div class="timeline">
+            <div class="tl-item tl-done">
+              <div class="tl-dot tl-dot--done">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <span class="tl-label">Withdrawal request submitted</span>
+                <span class="tl-time" id="tlSubmittedTime">—</span>
+              </div>
+            </div>
+            <div class="tl-item tl-done">
+              <div class="tl-dot tl-dot--done">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <span class="tl-label">Pending</span>
+                <span class="tl-sub">Processing your request</span>
+              </div>
+            </div>
+            <div class="tl-item tl-pending">
+              <div class="tl-dot tl-dot--pending"></div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <span class="tl-label tl-label--dim">In progress</span>
+              </div>
+            </div>
+            <div class="tl-item tl-pending tl-last">
+              <div class="tl-dot tl-dot--pending"></div>
+              <div class="tl-content">
+                <span class="tl-label tl-label--dim">Sent</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAIL ROWS -->
+          <div class="receipt-details">
+            <div class="receipt-row">
+              <span class="rr-label">Blockchain</span>
+              <span class="rr-val" id="receiptNetwork">TRC20</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Type</span>
+              <span class="rr-val">On-chain withdrawal</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Status</span>
+              <span class="rr-val rr-pending">Pending</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Address/domain</span>
+              <span class="rr-val addr-mono">
+                <button class="inline-copy" id="copyReceiptAddr"><i class="fa-regular fa-copy"></i></button>
+              </span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Fee</span>
+              <span class="rr-val" id="receiptFee">1 USDT</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Time</span>
+              <span class="rr-val" id="receiptDate">—</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Reference no.</span>
+              <span class="rr-val rr-ref">
+                <span id="receiptRef">—</span>
+                <button class="inline-copy" id="copyRef"><i class="fa-regular fa-copy"></i></button>
+              </span>
+            </div>
+          </div>
+
+          <!-- AUTO-REDIRECT COUNTDOWN -->
+          <div class="receipt-redirect-notice" id="receiptRedirectNotice">
+            <div class="redirect-spinner"></div>
+            <p class="redirect-text">Redirecting in <span id="redirectCountdown">3</span>s…</p>
+          </div>
+
+        </div>
+      </div>
+      <!-- END PAGE 3 -->
+
+      <!-- ══ PAGE 4: CONGRATULATIONS ══ -->
+      <div class="page" id="page-congrats">
+        <div class="wd-scroll congrats-scroll">
+
+          <div class="congrats-icon-wrap">
+            <div class="congrats-check">
+              <img src="attention.jpg" alt="Attention" class="congrats-check-img" />
+            </div>
+          </div>
+
+          <h1 class="congrats-title">Attention!</h1>
+
+          <p class="congrats-msg">
+            Please review the details below before your withdrawal can be finalized. Thank you for trusting <strong>Sage Wealth</strong>.
+          </p>
+
+          <div class="congrats-card">
+            <div class="congrats-card-header">
+              <div class="congrats-card-icon">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+              <span class="congrats-card-label">Destination Wallet</span>
+            </div>
+            <p class="congrats-wallet-addr" id="congratsWallet">—</p>
+            <button
+              onclick="navigator.clipboard.writeText(document.getElementById('congratsWallet').textContent).then(()=>showToast('Address copied!'))"
+              style="background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.25);color:#e74c3c;border-radius:8px;padding:6px 14px;font-size:0.72rem;font-weight:600;cursor:pointer;width:100%;margin-bottom:12px;font-family:'Sora',sans-serif;">
+              <i class="fa-regular fa-copy"></i>&nbsp; Copy Address
+            </button>
+            <div class="congrats-card-divider"></div>
+            <div class="congrats-fees-row">
+              <div class="congrats-fee-item">
+                <span class="congrats-fee-label">Payment Charges</span>
+                <span class="congrats-fee-val">$00.00</span>
+              </div>
+              <div class="congrats-fee-item">
+                <span class="congrats-fee-label">Network Fee</span>
+                <span class="congrats-fee-val">$0.00</span>
+              </div>
+              <div class="congrats-fee-item congrats-fee-item-total">
+                <span class="congrats-fee-label">Total Deducted</span>
+                <span class="congrats-fee-val congrats-fee-total" id="congratsTotal">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="congrats-status-badge">
+            <span class="congrats-status-dot"></span>
+            <span>Transaction Pending · Processing</span>
+          </div>
+
+          <button class="congrats-continue-btn" id="congratsContinueBtn">
+            Payment Completed
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+
+          <div style="height:40px"></div>
+        </div>
+      </div>
+      <!-- END PAGE 4 -->
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ══ PROCESSING OVERLAY ══ -->
+  <div class="proc-overlay hidden" id="procOverlay">
+    <div class="proc-box">
+      <div class="proc-spinner"></div>
+      <p class="proc-title">Processing</p>
+      <div class="proc-sub-row">
+        <span class="proc-sub">Please wait</span>
+        <span class="proc-dot"></span>
+        <span class="proc-dot"></span>
+        <span class="proc-dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* ── Receipt redirect notice ── */
+    .receipt-redirect-notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      margin: 20px 0 8px;
+      background: rgba(192, 57, 43, 0.08);
+      border: 1px solid rgba(192, 57, 43, 0.2);
+      border-radius: 14px;
+    }
+
+    .redirect-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(192, 57, 43, 0.3);
+      border-top-color: #c0392b;
+      border-radius: 50%;
+      animation: rSpin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes rSpin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .redirect-text {
+      font-size: 0.8rem;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .redirect-text span {
+      color: #c0392b;
+      font-weight: 700;
+    }
+
+    /* ── Congratulations page ── */
+    .congrats-scroll {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 22px 30px;
+      min-height: 100dvh;
+      height: 100dvh;
+      position: relative;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .congrats-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .congrats-icon-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 24px;
+      animation: iconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both,
+                 iconWobble 2.6s ease-in-out 1s infinite;
+    }
+
+    @keyframes iconPop {
+      from {
+        opacity: 0;
+        transform: scale(0) rotate(-20deg);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+      }
+    }
+
+    @keyframes iconWobble {
+      0%, 80%, 100% { transform: rotate(0deg); }
+      84%  { transform: rotate(-8deg); }
+      88%  { transform: rotate(7deg); }
+      92%  { transform: rotate(-5deg); }
+      96%  { transform: rotate(3deg); }
+    }
+
+    .congrats-check {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #f0f0f0;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+
+    .congrats-check-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .congrats-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #f0f0f0;
+      text-align: center;
+      margin-bottom: 14px;
+      animation: slideUp 0.5s ease 0.3s both;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .congrats-msg {
+      font-size: 0.82rem;
+      color: #888;
+      text-align: center;
+      line-height: 1.75;
+      margin-bottom: 28px;
+      max-width: 320px;
+      animation: slideUp 0.5s ease 0.4s both;
+    }
+
+    .congrats-msg strong {
+      color: #f0f0f0;
+    }
+
+    .congrats-card {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-left: 3px solid #F0B90B;
+      border-radius: 20px;
+      padding: 20px 18px;
+      margin-bottom: 20px;
+      animation: slideUp 0.5s ease 0.45s both;
+    }
+
+    .congrats-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .congrats-card-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(192, 57, 43, 0.12);
+      border: 1px solid rgba(192, 57, 43, 0.2);
+      color: #e74c3c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .congrats-card-label {
+      font-size: 0.7rem;
+      color: #666;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .congrats-wallet-addr {
+      font-size: 0.78rem;
+      color: #f0f0f0;
+      word-break: break-all;
+      line-height: 1.6;
+      padding: 10px 12px;
+      background: #222;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-family: monospace;
+      letter-spacing: 0.3px;
+    }
+
+    .congrats-card-divider {
+      height: 1px;
+      background: #2a2a2a;
+      margin-bottom: 16px;
+    }
+
+    .congrats-fees-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .congrats-fee-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .congrats-fee-label {
+      font-size: 0.78rem;
+      color: #666;
+    }
+
+    .congrats-fee-val {
+      font-size: 0.82rem;
+      color: #f0f0f0;
+      font-weight: 600;
+    }
+
+    .congrats-fee-item.congrats-fee-item-total {
+      padding-top: 10px;
+      margin-top: 2px;
+      border-top: 1px dashed #2a2a2a;
+    }
+
+    .congrats-fee-total {
+      color: #F0B90B;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .congrats-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(240, 185, 11, 0.1);
+      border: 1px solid rgba(240, 185, 11, 0.25);
+      border-radius: 99px;
+      font-size: 0.75rem;
+      color: #F0B90B;
+      font-weight: 600;
+      margin-bottom: 28px;
+      animation: slideUp 0.5s ease 0.5s both;
+    }
+
+    .congrats-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #F0B90B;
+      animation: dotPulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.7);
+      }
+    }
+
+    .congrats-continue-btn {
+      width: 100%;
+      padding: 16px;
+      background: #c0392b;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(192, 57, 43, 0.4);
+      transition: background 0.3s ease, transform 0.2s ease;
+      animation: slideUp 0.5s ease 0.55s both;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .congrats-continue-btn:hover {
+      background: #e74c3c;
+    }
+
+    .congrats-continue-btn:active {
+      transform: scale(0.97);
+    }
+  </style>
+
+  <script type="module">
+    import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount } from './session.js';
+    window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount };
+    requireSession().then(({ uid, profile }) => {
+      window.sw.uid = uid;
+      window.sw.profile = profile;
+      document.dispatchEvent(new CustomEvent('sw:ready', { detail: { uid, profile } }));
+      document.body.classList.remove('sw-loading');
+      const swGate = document.getElementById('swGate');
+      if (swGate) swGate.remove();
+    });
+  </script>
+  <script src="withdraw.js"></script>
+</body>
+
+</html>

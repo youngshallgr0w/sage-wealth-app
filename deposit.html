@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Sage Wealth — Deposit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="deposit.css"/>
+</head>
+<body class="sw-loading">
+<div id="swGate" class="sw-gate"></div>
+<style>
+  body.sw-loading > *:not(#swGate) { visibility: hidden; }
+  .sw-gate { position: fixed; inset: 0; z-index: 9999; background: #0e0e0e; }
+</style>
+
+  <div class="app">
+    <div class="phone-frame">
+
+      <!-- ══ PAGE 1: DEPOSIT FORM ══ -->
+      <div class="page active" id="page-deposit">
+
+        <header class="dp-topbar">
+          <a href="main.html" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </a>
+          <h1 class="dp-title">Deposit</h1>
+          <div class="dp-spacer"></div>
+        </header>
+
+        <div class="dp-scroll">
+
+          <!-- NETWORK BADGE -->
+          <div class="network-badge">
+            <div class="net-icon-wrap btc-wrap">
+              <span class="net-symbol">₿</span>
+            </div>
+            <div class="net-info">
+              <span class="net-name">Bitcoin</span>
+              <span class="net-chain">BTC Network</span>
+            </div>
+          </div>
+
+          <!-- QR + ADDRESS CARD -->
+          <div class="address-card">
+
+            <!-- QR CODE (CSS-generated placeholder) -->
+            <div class="qr-wrap">
+              <div class="qr-frame">
+                <img
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=39inDCRsS4A7b3PLPfZUySeD8ZnuHXt7dz&bgcolor=1C2128&color=EAECEF&margin=2"
+                  alt="BTC QR Code"
+                  class="qr-img"
+                  onerror="this.style.display='none'; document.getElementById('qrFallback').style.display='flex';"
+                />
+                <div class="qr-fallback hidden" id="qrFallback">
+                  <i class="fa-solid fa-qrcode"></i>
+                </div>
+              </div>
+              <p class="qr-hint">Scan to get address</p>
+            </div>
+
+            <!-- ADDRESS FIELD -->
+            <div class="addr-section-label">BTC Deposit Address</div>
+            <div class="addr-field">
+              <span class="addr-text" id="btcAddress">39inDCRsS4A7b3PLPfZUySeD8ZnuHXt7dz</span>
+              <button class="copy-addr-btn" id="copyAddrBtn">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+
+            <!-- COPY BUTTON BIG -->
+            <button class="big-copy-btn" id="bigCopyBtn">
+              <i class="fa-regular fa-copy"></i>
+              Copy Address
+            </button>
+
+          </div>
+
+          <!-- STEP GUIDE -->
+          <div class="guide-card">
+            <p class="guide-title">How to deposit</p>
+            <div class="guide-step">
+              <div class="step-num">1</div>
+              <p class="step-text">Copy the BTC wallet address above or scan the QR code.</p>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">2</div>
+              <p class="step-text">Open your crypto wallet or exchange and send BTC to this address.</p>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">3</div>
+              <p class="step-text">Only send <strong>Bitcoin (BTC)</strong> to this address. Sending other coins will result in permanent loss.</p>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">4</div>
+              <p class="step-text">After sending, tap the button below and enter your transaction details.</p>
+            </div>
+          </div>
+
+          <!-- WARNING BOX -->
+          <div class="warn-box">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>Send only <strong>BTC</strong> to this address. Minimum deposit: <strong>0.0001 BTC</strong>. Deposits typically confirm within 30–60 minutes.</p>
+          </div>
+
+          <!-- PAID BUTTON -->
+          <button class="paid-btn" id="paidBtn">
+            <i class="fa-solid fa-circle-check"></i>
+            I've Made Payment
+          </button>
+
+        </div>
+      </div>
+      <!-- END PAGE 1 -->
+
+
+      <!-- ══ PAGE 2: PAYMENT DETAILS FORM ══ -->
+      <div class="page" id="page-details">
+
+        <header class="dp-topbar">
+          <button class="back-btn" id="backToDeposit">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <h1 class="dp-title">Payment Details</h1>
+          <div class="dp-spacer"></div>
+        </header>
+
+        <div class="dp-scroll">
+
+          <p class="details-intro">
+            <i class="fa-solid fa-circle-info"></i>
+            Enter your transaction details so we can verify and credit your account.
+          </p>
+
+          <!-- AMOUNT FIELD -->
+          <div class="dp-field-label">Amount Sent (BTC)</div>
+          <div class="dp-input-wrap">
+            <span class="dp-input-prefix">₿</span>
+            <input
+              type="text"
+              inputmode="decimal"
+              class="dp-input"
+              id="dpAmount"
+              placeholder="0.00000000"
+            />
+          </div>
+
+          <!-- TXID FIELD -->
+          <div class="dp-field-label">Transaction ID (TxID) <span class="dp-optional">optional</span></div>
+          <div class="dp-input-wrap dp-input-wrap--mono">
+            <input
+              type="text"
+              class="dp-input dp-input--mono"
+              id="dpTxid"
+              placeholder="e.g. 4a3b2c1d…"
+            />
+          </div>
+
+          <!-- FROM WALLET FIELD -->
+          <div class="dp-field-label">Sending Wallet / Exchange <span class="dp-optional">optional</span></div>
+          <div class="dp-input-wrap">
+            <input
+              type="text"
+              class="dp-input"
+              id="dpWallet"
+              placeholder="e.g. Binance, Coinbase, Trust Wallet"
+            />
+          </div>
+
+          <div class="dp-confirm-warn">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Your deposit will be reviewed and credited within 30–60 minutes after confirmation.</span>
+          </div>
+
+          <button class="dp-submit-btn" id="dpSubmitBtn">
+            Submit & Verify Deposit
+          </button>
+
+        </div>
+      </div>
+      <!-- END PAGE 2 -->
+
+
+      <!-- ══ PAGE 3: AWAITING CONFIRMATION ══ -->
+      <div class="page" id="page-receipt">
+
+        <header class="dp-topbar">
+          <a href="main.html" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </a>
+          <h1 class="dp-title">Deposit Details</h1>
+          <div class="dp-spacer"></div>
+        </header>
+
+        <div class="dp-scroll receipt-scroll">
+
+          <!-- AMOUNT + STATUS -->
+          <div class="receipt-top">
+            <p class="receipt-amount-label">Amount</p>
+            <div class="receipt-big-amount">
+              <span class="receipt-btc-sym">₿</span>
+              <span id="rcAmount">0.00000000</span>
+            </div>
+          </div>
+
+          <!-- TIMELINE -->
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot tl-dot--done"><i class="fa-solid fa-check"></i></div>
+              <div class="tl-line tl-line--done"></div>
+              <div class="tl-content">
+                <span class="tl-label">Deposit submitted</span>
+                <span class="tl-time" id="rcTime">—</span>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-dot--pulse"></div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <span class="tl-label">Awaiting confirmation</span>
+                <span class="tl-sub">Waiting for blockchain confirmation</span>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-dot--empty"></div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <span class="tl-label tl-label--dim">Processing</span>
+              </div>
+            </div>
+            <div class="tl-item tl-last">
+              <div class="tl-dot tl-dot--empty"></div>
+              <div class="tl-content">
+                <span class="tl-label tl-label--dim">Credited to account</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAIL ROWS -->
+          <div class="receipt-details">
+            <div class="receipt-row">
+              <span class="rr-label">Network</span>
+              <span class="rr-val">Bitcoin (BTC)</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Type</span>
+              <span class="rr-val">On-chain deposit</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Status</span>
+              <span class="rr-val rr-pending">Awaiting Confirmation</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Deposit Address</span>
+              <span class="rr-val addr-mono">
+                39inDCRsS4A7b3PLPfZUySeD8ZnuHXt7dz
+                <button class="inline-copy" id="copyRcAddr"><i class="fa-regular fa-copy"></i></button>
+              </span>
+            </div>
+            <div class="receipt-row" id="txidRow">
+              <span class="rr-label">TxID</span>
+              <span class="rr-val addr-mono" id="rcTxid">—</span>
+            </div>
+            <div class="receipt-row" id="walletRow">
+              <span class="rr-label">From</span>
+              <span class="rr-val" id="rcWallet">—</span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Reference no.</span>
+              <span class="rr-val rr-ref">
+                <span id="rcRef">—</span>
+                <button class="inline-copy" id="copyRcRef"><i class="fa-regular fa-copy"></i></button>
+              </span>
+            </div>
+            <div class="receipt-row">
+              <span class="rr-label">Time</span>
+              <span class="rr-val" id="rcDate">—</span>
+            </div>
+          </div>
+
+          <div class="receipt-note">
+            <i class="fa-solid fa-clock"></i>
+            <p>Deposits typically confirm within <strong>30–60 minutes</strong>. You will be notified once credited.</p>
+          </div>
+
+          <a href="main.html" class="home-btn">Back to Home</a>
+
+        </div>
+      </div>
+      <!-- END PAGE 3 -->
+
+    </div>
+  </div>
+
+  <!-- ══ PROCESSING OVERLAY ══ -->
+  <div class="proc-overlay hidden" id="procOverlay">
+    <div class="proc-box">
+      <div class="proc-spinner"></div>
+      <p class="proc-title">Verifying</p>
+      <div class="proc-sub-row">
+        <span class="proc-sub">Please wait</span>
+        <span class="proc-dot"></span>
+        <span class="proc-dot"></span>
+        <span class="proc-dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount } from './session.js';
+    window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount };
+    requireSession().then(({ uid, profile }) => {
+      window.sw.uid = uid;
+      window.sw.profile = profile;
+      document.dispatchEvent(new CustomEvent('sw:ready', { detail: { uid, profile } }));
+      document.body.classList.remove('sw-loading');
+      const swGate = document.getElementById('swGate');
+      if (swGate) swGate.remove();
+    });
+  </script>
+  <script src="deposit.js"></script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Sage Wealth — Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="more.css"/>
+</head>
+<body class="sw-loading">
+<div id="swGate" class="sw-gate"></div>
+<style>
+  body.sw-loading > *:not(#swGate) { visibility: hidden; }
+  .sw-gate { position: fixed; inset: 0; z-index: 9999; background: #0e0e0e; }
+</style>
+<div class="app" id="appRoot">
+  <div class="page-wrap">
+
+    <header class="m-topbar">
+      <a href="index.html" class="m-back"><i class="fa-solid fa-arrow-left"></i></a>
+      <h1 class="m-title">Profile</h1>
+      <button class="m-edit-btn" id="editProfileBtn"><i class="fa-solid fa-pen-to-square"></i></button>
+    </header>
+
+    <div class="m-scroll">
+
+      <!-- PROFILE CARD -->
+      <div class="profile-card">
+        <div class="avatar-ring">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23222'/><circle cx='50' cy='38' r='18' fill='%23444'/><ellipse cx='50' cy='88' rx='32' ry='24' fill='%23444'/></svg>" alt="Profile" class="profile-avatar" id="profileAvatar"
+            onerror="this.style.display='none';document.getElementById('avatarInit').style.display='flex'"/>
+          <div class="avatar-initials" id="avatarInit">N</div>
+          <div class="avatar-online"></div>
+        </div>
+        <h2 class="profile-name" id="profileName"></h2>
+        <p class="profile-email" id="profileEmail"></p>
+        <p class="profile-phone" id="profilePhone"></p>
+        <div class="profile-tags">
+          <span class="ptag ptag-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>
+          <span class="ptag ptag-btc">₿ BTC Investor</span>
+        </div>
+      </div>
+
+      <!-- BALANCE CARD -->
+      <div class="card-wrap">
+        <div class="balance-card">
+          <div class="card-shimmer"></div>
+          <div class="card-header-row">
+            <button class="show-info-btn" id="toggleBalanceMore">
+              <i class="fa-regular fa-eye" id="eyeIconMore"></i>
+              <span>Show info</span>
+            </button>
+          </div>
+          <div class="card-content-wrap">
+            <div class="balance-label-wrap">
+              <p class="balance-label">total Available Balance</p>
+            </div>
+            <div class="card-balance-section">
+              <h2 class="balance-amount" id="moreBalance">$0.00</h2>
+            </div>
+            <div class="card-footer-row">
+              <div class="card-detail">
+                <span class="card-detail-label"></span>
+                <span class="card-detail-value"></span>
+              </div>
+              <div class="card-detail">
+                <span class="card-detail-label"></span>
+                <span class="card-detail-value"></span>
+              </div>
+              <div class="card-detail">
+                <span class="card-detail-label"></span>
+                <span class="card-detail-value"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREFERENCES -->
+      <div class="settings-section">
+        <p class="settings-label">Preferences</p>
+        <div class="settings-group">
+
+          <div class="s-row">
+            <div class="s-left">
+              <div class="s-icon s-icon-blue"><i class="fa-solid fa-language"></i></div>
+              <span class="s-name">Language</span>
+            </div>
+            <div class="s-right">
+              <span class="s-value">English</span>
+              <i class="fa-solid fa-chevron-right s-arr"></i>
+            </div>
+          </div>
+
+          <div class="s-row">
+            <div class="s-left">
+              <div class="s-icon s-icon-gold" id="themeIconWrap"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+              <span class="s-name" id="themeLabel">Dark Mode</span>
+            </div>
+            <div class="s-right">
+              <label class="toggle">
+                <input type="checkbox" id="themeToggle" checked/>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="s-row">
+            <div class="s-left">
+              <div class="s-icon s-icon-green"><i class="fa-solid fa-bell"></i></div>
+              <span class="s-name">Notifications</span>
+            </div>
+            <div class="s-right">
+              <label class="toggle">
+                <input type="checkbox" checked/>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="s-row">
+            <div class="s-left">
+              <div class="s-icon s-icon-purple"><i class="fa-solid fa-fingerprint"></i></div>
+              <span class="s-name">Biometric Login</span>
+            </div>
+            <div class="s-right">
+              <label class="toggle">
+                <input type="checkbox" id="bioToggle"/>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ACCOUNT -->
+      <div class="settings-section">
+        <p class="settings-label">Account</p>
+        <div class="settings-group">
+
+          <button class="s-row s-row-btn" id="profileSettingBtn">
+            <div class="s-left">
+              <div class="s-icon s-icon-red"><i class="fa-solid fa-circle-user"></i></div>
+              <span class="s-name">Profile Settings</span>
+            </div>
+            <i class="fa-solid fa-chevron-right s-arr"></i>
+          </button>
+
+          <button class="s-row s-row-btn" id="securityBtn">
+            <div class="s-left">
+              <div class="s-icon s-icon-green"><i class="fa-solid fa-shield-halved"></i></div>
+              <span class="s-name">Security &amp; PIN</span>
+            </div>
+            <i class="fa-solid fa-chevron-right s-arr"></i>
+          </button>
+
+          <button class="s-row s-row-btn" id="referBtn">
+            <div class="s-left">
+              <div class="s-icon s-icon-orange"><i class="fa-solid fa-user-plus"></i></div>
+              <span class="s-name">Refer a Friend</span>
+            </div>
+            <i class="fa-solid fa-chevron-right s-arr"></i>
+          </button>
+
+          <button class="s-row s-row-btn" id="supportBtn">
+            <div class="s-left">
+              <div class="s-icon s-icon-teal"><i class="fa-solid fa-headset"></i></div>
+              <span class="s-name">Customer Support</span>
+            </div>
+            <i class="fa-solid fa-chevron-right s-arr"></i>
+          </button>
+
+          <button class="s-row s-row-btn" id="statementsBtn">
+            <div class="s-left">
+              <div class="s-icon s-icon-blue"><i class="fa-solid fa-file-lines"></i></div>
+              <span class="s-name">Statements &amp; Reports</span>
+            </div>
+            <i class="fa-solid fa-chevron-right s-arr"></i>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- LEGAL -->
+      <div class="settings-section">
+        <p class="settings-label">Legal</p>
+        <div class="settings-group">
+          <button class="s-row s-row-btn" id="privacyBtn">
+            <div class="s-left">
+              <div class="s-icon s-icon-dim"><i class="fa-solid fa-lock"></i></div>
+              <span class="s-name">Privacy Policy</span>
+            </div>
+            <i class="fa-solid fa-chevron-right s-arr"></i>
+          </button>
+          <button class="s-row s-row-btn" id="termsBtn">
+            <div class="s-left">
+              <div class="s-icon s-icon-dim"><i class="fa-solid fa-scroll"></i></div>
+              <span class="s-name">Terms of Service</span>
+            </div>
+            <i class="fa-solid fa-chevron-right s-arr"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="logout-btn" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+
+      <div style="height:90px"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+      <a href="main.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a href="history.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>History</span></a>
+      <a href="add.html" class="nav-item nav-center"><span class="nav-center-icon"><i class="fa-solid fa-plus"></i></span></a>
+      <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-wallet"></i><span>Dashboard</span></a>
+      <button class="nav-item active"><i class="fa-solid fa-gear"></i><span>Settings</span></button>
+    </nav>
+</div>
+
+<!-- ═══ OVERLAYS ═══ -->
+
+<!-- PROFILE SETTINGS -->
+<div class="overlay hidden" id="profileOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Profile Settings</h3>
+      <button class="sheet-close" data-close="profileOverlay"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <label class="field-label">Display Name</label>
+      <div class="field-wrap"><input class="field-input" id="editName" value="" placeholder="Display name"/></div>
+      <label class="field-label">Email</label>
+      <div class="field-wrap"><input class="field-input" id="editEmail" value="" readonly style="opacity:0.5"/></div>
+      <label class="field-label">Phone</label>
+      <div class="field-wrap"><input class="field-input" id="editPhone" value="" placeholder="+1 (555) 123-4567"/></div>
+      <button class="sheet-btn" id="saveProfileBtn">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- SECURITY -->
+<div class="overlay hidden" id="securityOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Security &amp; PIN</h3>
+      <button class="sheet-close" data-close="securityOverlay"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="sec-item">
+        <div class="sec-left">
+          <div class="s-icon s-icon-green"><i class="fa-solid fa-key"></i></div>
+          <div><p class="sec-name">Withdrawal PIN</p><p class="sec-sub">4-digit PIN for withdrawals</p></div>
+        </div>
+        <button class="sec-change-btn" id="changePinBtn">Change</button>
+      </div>
+      <div class="sec-item">
+        <div class="sec-left">
+          <div class="s-icon s-icon-blue"><i class="fa-solid fa-lock"></i></div>
+          <div><p class="sec-name">Two-Factor Auth</p><p class="sec-sub">Extra layer of security</p></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="twoFaToggle"/><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
+      </div>
+      <div class="sec-item">
+        <div class="sec-left">
+          <div class="s-icon s-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div><p class="sec-name">Login Alerts</p><p class="sec-sub">Notify me of new logins</p></div>
+        </div>
+        <label class="toggle"><input type="checkbox" checked/><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REFER -->
+<div class="overlay hidden" id="referOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Refer a Friend</h3>
+      <button class="sheet-close" data-close="referOverlay"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="refer-hero">
+        <div class="refer-icon-wrap"><i class="fa-solid fa-gift"></i></div>
+        <p class="refer-title">Earn $5 per referral</p>
+        <p class="refer-sub">Share your code. Earn when friends join.</p>
+      </div>
+      <p class="field-label">Your Referral Code</p>
+      <div class="refer-code-row">
+        <span class="refer-code">SAGE-NM2026</span>
+        <button class="refer-copy-btn" id="copyReferCode"><i class="fa-regular fa-copy"></i> Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATEMENTS -->
+<div class="overlay hidden" id="statementsOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Statements &amp; Reports</h3>
+      <button class="sheet-close" data-close="statementsOverlay"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="stmt-item">
+        <div class="s-icon s-icon-red"><i class="fa-solid fa-file-pdf"></i></div>
+        <div class="stmt-info"><p class="stmt-name">April 2026 Statement</p><p class="stmt-sub">1 transaction · PDF</p></div>
+        <button class="stmt-dl-btn" id="dlAprilBtn"><i class="fa-solid fa-download"></i></button>
+      </div>
+      <div class="stmt-item">
+        <div class="s-icon s-icon-green"><i class="fa-solid fa-table"></i></div>
+        <div class="stmt-info"><p class="stmt-name">Full History Export</p><p class="stmt-sub">All transactions · CSV</p></div>
+        <button class="stmt-dl-btn" id="dlFullBtn"><i class="fa-solid fa-download"></i></button>
+      </div>
+      <p class="stmt-note">Statements are generated automatically at month end.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY -->
+<div class="overlay hidden" id="privacyOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Privacy Policy</h3>
+      <button class="sheet-close" data-close="privacyOverlay"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body legal-body">
+      <p><strong>Last updated:</strong> April 26, 2026</p>
+      <p>Sage Wealth collects personal data solely for providing investment services. We never sell or share your data with third parties.</p>
+      <p><strong>Data collected:</strong> Name, email, transaction history, device info for security.</p>
+      <p><strong>Security:</strong> All data is AES-256 encrypted. Withdrawals require PIN verification.</p>
+      <p><strong>Your rights:</strong> Request account deletion at any time by contacting support.</p>
+      <p>Contact: <strong>sagewealthsupport@gmail.com</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- TERMS -->
+<div class="overlay hidden" id="termsOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Terms of Service</h3>
+      <button class="sheet-close" data-close="termsOverlay"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body legal-body">
+      <p><strong>Last updated:</strong> April 26, 2026</p>
+      <p><strong>1. Eligibility:</strong> You must be 18+ to use this platform.</p>
+      <p><strong>2. Investments:</strong> Crypto investments carry risk. Past returns do not guarantee future performance.</p>
+      <p><strong>3. Withdrawals:</strong> All withdrawals require PIN and process within 1–3 business days.</p>
+      <p><strong>4. Security:</strong> You are responsible for keeping your PIN secure.</p>
+      <p><strong>5. Termination:</strong> We may suspend accounts that violate these terms.</p>
+      <p>Contact: <strong>sagewealthsupport@gmail.com</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PIN -->
+<div class="overlay hidden" id="pinOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Change PIN</h3>
+      <button class="sheet-close" data-close="pinOverlay"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <label class="field-label">Current PIN</label>
+      <div class="field-wrap"><input class="field-input" id="currentPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"/></div>
+      <label class="field-label">New PIN</label>
+      <div class="field-wrap"><input class="field-input" id="newPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"/></div>
+      <label class="field-label">Confirm New PIN</label>
+      <div class="field-wrap"><input class="field-input" id="confirmPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"/></div>
+      <button class="sheet-btn" id="savePinBtn">Update PIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMER SUPPORT CHAT -->
+<div class="overlay hidden" id="supportOverlay">
+  <div class="sheet sheet-full">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="support-header-left">
+        <div class="support-av-wrap">
+          <div class="support-av">SW</div>
+          <div class="support-dot"></div>
+        </div>
+        <div>
+          <p class="support-name">Sage Support</p>
+          <p class="support-status">● Online</p>
+        </div>
+      </div>
+      <button class="sheet-close" data-close="supportOverlay"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="chat-bubble chat-bot">
+        <div class="chat-av">SW</div>
+        <div class="chat-msg-wrap">
+          <p class="chat-msg-text" id="supportGreeting">Hi there! 👋 Welcome to Sage Wealth Support. How can I help you today?</p>
+          <span class="chat-time">Just now</span>
+        </div>
+      </div>
+      <div class="chat-suggestions" id="chatSugg">
+        <button class="sugg-btn" data-msg="How do I deposit?">💰 How do I deposit?</button>
+        <button class="sugg-btn" data-msg="Withdrawal help">📤 Withdrawal help</button>
+        <button class="sugg-btn" data-msg="Check my balance">💳 Check my balance</button>
+        <button class="sugg-btn" data-msg="How do I change my PIN?">🔐 Change my PIN</button>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" placeholder="Type a message…" type="text"/>
+      <button class="chat-send" id="chatSend"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="m-toast hidden" id="mToast"></div>
+
+<script type="module">
+  import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, updateProfileName, updateProfilePhone, logoutAccount } from './session.js';
+  window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, updateProfileName, updateProfilePhone, logoutAccount };
+  requireSession().then(({ uid, profile }) => {
+    window.sw.uid = uid;
+    window.sw.profile = profile;
+    document.dispatchEvent(new CustomEvent('sw:ready', { detail: { uid, profile } }));
+    document.body.classList.remove('sw-loading');
+    const swGate = document.getElementById('swGate');
+    if (swGate) swGate.remove();
+  });
+</script>
+<script src="more.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Sage Wealth — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="dashboard.css"/>
+</head>
+<body class="sw-loading">
+<div id="swGate" class="sw-gate"></div>
+<style>
+  body.sw-loading > *:not(#swGate) { visibility: hidden; }
+  .sw-gate { position: fixed; inset: 0; z-index: 9999; background: #0e0e0e; }
+</style>
+
+  <div class="app">
+
+    <!-- ══ NOTIFICATION PANEL ══ -->
+    <div class="panel-overlay hidden" id="notifPanel">
+      <div class="side-panel" id="notifDrawer">
+        <div class="panel-header">
+          <h2 class="panel-title">Notifications</h2>
+          <button class="panel-close" id="closeNotif"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="panel-body" id="notifPanelBody"></div>
+      </div>
+    </div>
+
+    <!-- ══ MAIL PANEL ══ -->
+    <div class="panel-overlay hidden" id="mailPanel">
+      <div class="side-panel" id="mailDrawer">
+        <div class="panel-header">
+          <h2 class="panel-title">Messages</h2>
+          <button class="panel-close" id="closeMail"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="panel-body" id="mailPanelBody"></div>
+      </div>
+    </div>
+
+    <!-- ══ MAIN SCROLL ══ -->
+    <div class="main-scroll">
+
+      <!-- TOP BAR -->
+      <header class="db-topbar">
+        <div class="db-user">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23222'/><circle cx='50' cy='38' r='18' fill='%23444'/><ellipse cx='50' cy='88' rx='32' ry='24' fill='%23444'/></svg>" alt="Profile" class="db-avatar" id="dbAvatarImg" onerror="this.style.display='none';document.getElementById('avatarFallback').style.display='flex'"/>
+          <div class="avatar-fallback" id="avatarFallback">N</div>
+          <div class="db-user-info">
+            <span class="db-bank-id"></span>
+            <span class="db-account">986540••••</span>
+            <span class="db-phone" id="dbPhone"></span>
+          </div>
+        </div>
+        <div class="db-actions">
+          <button class="db-icon-btn" id="mailBtn">
+            <i class="fa-regular fa-envelope"></i>
+            <span class="db-badge" id="mailBadge">2</span>
+          </button>
+          <button class="db-icon-btn" id="notifBtn">
+            <i class="fa-regular fa-bell"></i>
+            <span class="db-badge">2</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- GREETING -->
+      <div class="greeting-block">
+        <h1 class="greeting-text">Hi <span class="greeting-name" id="greetName"></span> <i class="fa-solid fa-hand greeting-wave"></i></h1>
+        <p class="greeting-sub">here's what's <em>happening</em><br>on your accounts</p>
+      </div>
+
+      <!-- CHART CARD -->
+      <div class="chart-card">
+        <div class="chart-tabs">
+          <button class="ctab active" data-period="1M">1M</button>
+          <button class="ctab" data-period="3M">3M</button>
+          <button class="ctab" data-period="6M">6M</button>
+          <button class="ctab" data-period="1Y">1Y</button>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="investChart"></canvas>
+        </div>
+        <div class="chart-months">
+          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span>
+          <span>May</span><span>Jun</span><span>Jul</span><span>Aug</span>
+          <span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+        </div>
+        <div class="chart-summary">
+          <p class="chart-summary-label">From account opening to today,<br>your portfolio has grown to</p>
+          <p class="chart-summary-val" id="chartSummaryVal">$0.00</p>
+        </div>
+      </div>
+
+      <!-- BALANCE SLIDER ROW -->
+      <div class="balance-row">
+        <div class="balance-pill">
+          <span class="balance-pill-val" id="dashBalance">$0.00</span>
+          <button class="balance-pill-more"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+        </div>
+        <p class="balance-pill-label">These are your remaining<br>resources this month</p>
+      </div>
+
+      <!-- QUICK ACTION GRID -->
+      <div class="quick-grid">
+        <a href="history.html" class="quick-card">
+          <div class="qc-icon qc-green"><i class="fa-solid fa-clock-rotate-left"></i></div>
+          <span class="qc-label">History</span>
+          <i class="fa-solid fa-chevron-right qc-arr"></i>
+        </a>
+        <a href="deposit.html" class="quick-card">
+          <div class="qc-icon qc-gold"><i class="fa-solid fa-arrow-down"></i></div>
+          <span class="qc-label">Deposit</span>
+          <i class="fa-solid fa-chevron-right qc-arr"></i>
+        </a>
+        <a href="withdraw.html" class="quick-card">
+          <div class="qc-icon qc-red"><i class="fa-solid fa-arrow-up"></i></div>
+          <span class="qc-label">Withdraw</span>
+          <i class="fa-solid fa-chevron-right qc-arr"></i>
+        </a>
+        <a href="index.html" class="quick-card">
+          <div class="qc-icon qc-blue"><i class="fa-solid fa-house"></i></div>
+          <span class="qc-label">Home</span>
+          <i class="fa-solid fa-chevron-right qc-arr"></i>
+        </a>
+      </div>
+
+      <!-- STATS ROW -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Payment history</span>
+            <button class="stat-more"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+          <p class="stat-big stat-green">100%</p>
+          <div class="stat-bar-track"><div class="stat-bar-fill" style="width:100%"></div></div>
+          <p class="stat-sub">Percentage of payments<br>you've made on time</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Total account</span>
+            <button class="stat-more"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+          <p class="stat-big">1 <span class="stat-dot-badge">BTC</span></p>
+          <p class="stat-sub">Your investment<br>asset class</p>
+        </div>
+      </div>
+
+      <!-- RECENT ACTIVITY -->
+      <div class="recent-section">
+        <div class="recent-header">
+          <span class="recent-title">Recent Activity</span>
+          <a href="history.html" class="recent-all">View all</a>
+        </div>
+        <div id="recentList"></div>
+      </div>
+
+      <div style="height:90px"></div>
+    </div>
+
+    <!-- ══ BOTTOM NAV ══ -->
+    <!-- ══ BOTTOM NAV ══ -->
+    <nav class="bottom-nav">
+      <a href="main.html" class="nav-item">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </a>
+      <a href="history.html" class="nav-item">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>History</span>
+      </a>
+      <a href="add.html" class="nav-item nav-center">
+        <span class="nav-center-icon"><i class="fa-solid fa-plus"></i></span>
+      </a>
+      <button class="nav-item active">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Dashboard</span>
+      </button>
+      <a href="more.html" class="nav-item">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script type="module">
+    import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount } from './session.js';
+    window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount };
+    requireSession().then(({ uid, profile }) => {
+      window.sw.uid = uid;
+      window.sw.profile = profile;
+      document.dispatchEvent(new CustomEvent('sw:ready', { detail: { uid, profile } }));
+      document.body.classList.remove('sw-loading');
+      const swGate = document.getElementById('swGate');
+      if (swGate) swGate.remove();
+    });
+  </script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

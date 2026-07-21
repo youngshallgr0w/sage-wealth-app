@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sage Wealth Investment — Login</title>
+
+    <!-- ══ Open Graph / Social Preview ══ -->
+    <meta property="og:title" content="Sage Wealth Investment" />
+    <meta property="og:description" content="Secure your financial future with Sage Wealth — BTC investment platform with real-time portfolio tracking." />
+    <meta property="og:image" content="https://i.imgur.com/EsULJyq.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:url" content="https://sage-wealth.vercel.app" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sage Wealth" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Sage Wealth Investment" />
+    <meta name="twitter:description" content="Secure your financial future with Sage Wealth — BTC investment platform with real-time portfolio tracking." />
+    <meta name="twitter:image" content="https://i.imgur.com/EsULJyq.png" />
+    <meta name="description" content="Secure your financial future with Sage Wealth — BTC investment platform with real-time portfolio tracking." />
+    <meta itemprop="name" content="Sage Wealth Investment" />
+    <meta itemprop="description" content="Secure your financial future with Sage Wealth — BTC investment platform with real-time portfolio tracking." />
+    <meta itemprop="image" content="https://i.imgur.com/EsULJyq.png" />
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'><rect width='48' height='48' rx='12' fill='%23111111'/><circle cx='24' cy='24' r='20' stroke='%23c0392b' stroke-width='2'/><path d='M14 30 Q24 10 34 30' stroke='%23c0392b' stroke-width='2.5' fill='none' stroke-linecap='round'/><circle cx='24' cy='30' r='3' fill='%23c0392b'/></svg>" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --bg: #0e0e0e;
+            --surface: #181818;
+            --surface2: #222222;
+            --red: #c0392b;
+            --red-light: #e74c3c;
+            --red-glow: rgba(192, 57, 43, 0.35);
+            --red-dim: rgba(192, 57, 43, 0.12);
+            --green: #27ae60;
+            --text: #f0f0f0;
+            --text-muted: #888888;
+            --text-dim: #444444;
+            --border: #2a2a2a;
+            --border-focus: #c0392b;
+            --font: 'Sora', sans-serif;
+            --radius: 18px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        button { cursor: pointer; border: none; background: none; font-family: inherit; }
+        input  { font-family: inherit; }
+        a      { text-decoration: none; color: inherit; }
+
+        #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(192,57,43,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(192,57,43,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridShift 20s linear infinite;
+        }
+        @keyframes gridShift { 0%{transform:translateY(0)} 100%{transform:translateY(60px)} }
+
+        .glow-spot {
+            position: fixed; width: 600px; height: 600px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(192,57,43,0.18) 0%, transparent 70%);
+            top: -150px; left: -150px; z-index: 0; pointer-events: none;
+            animation: glowDrift 12s ease-in-out infinite alternate;
+        }
+        .glow-spot.right { top:auto; left:auto; bottom:-200px; right:-200px; width:500px; height:500px; animation-delay:-6s; animation-duration:15s; }
+        @keyframes glowDrift { 0%{transform:translate(0,0) scale(1);opacity:0.7} 100%{transform:translate(80px,60px) scale(1.2);opacity:1} }
+
+        .particle { position:fixed; border-radius:50%; background:var(--red); opacity:0; pointer-events:none; z-index:0; animation:particleFloat linear infinite; }
+        @keyframes particleFloat { 0%{opacity:0;transform:translateY(0) scale(0)} 10%{opacity:0.6} 90%{opacity:0.2} 100%{opacity:0;transform:translateY(-120vh) scale(1.5)} }
+
+        .page-wrap {
+            position: relative; z-index: 1; min-height: 100dvh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 32px 20px 40px;
+        }
+
+        .brand { display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:36px; animation:brandReveal 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+        @keyframes brandReveal { from{opacity:0;transform:translateY(-28px) scale(0.9)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+        .logo-ring { width:72px; height:72px; position:relative; }
+        .logo-ring svg { width:100%; height:100%; }
+        .logo-ring::after {
+            content:''; position:absolute; inset:-6px; border-radius:50%;
+            border:1.5px solid transparent; border-top-color:var(--red); border-right-color:var(--red);
+            animation:ringRotate 3s linear infinite;
+        }
+        @keyframes ringRotate { to{transform:rotate(360deg)} }
+
+        .brand-name { font-size:1.9rem; font-weight:700; letter-spacing:0.5px; color:var(--text); text-align:center; line-height:1; }
+        .brand-name span { color:var(--red); }
+        .brand-tagline { font-size:0.68rem; color:var(--text-muted); letter-spacing:3px; text-transform:uppercase; text-align:center; font-weight:500; }
+
+        .card {
+            width:100%; max-width:400px; background:var(--surface); border:1px solid var(--border);
+            border-radius:24px; padding:36px 32px 32px; position:relative; overflow:hidden;
+            animation:cardRise 0.8s cubic-bezier(0.22,1,0.36,1) 0.2s both;
+            box-shadow:0 0 0 1px rgba(255,255,255,0.03),0 24px 60px rgba(0,0,0,0.5),0 0 80px rgba(192,57,43,0.06);
+        }
+        @keyframes cardRise { from{opacity:0;transform:translateY(40px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+        .card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(192,57,43,0.6),transparent); animation:topLineGlow 3s ease-in-out infinite alternate; }
+        @keyframes topLineGlow { 0%{opacity:0.4} 100%{opacity:1} }
+
+        .tab-switch { display:flex; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:28px; position:relative; }
+        .tab-btn { flex:1; padding:10px; font-size:0.78rem; font-weight:600; letter-spacing:0.3px; color:var(--text-muted); border-radius:9px; transition:color var(--transition); position:relative; z-index:1; }
+        .tab-btn.active { color:var(--text); }
+        .tab-slider { position:absolute; top:4px; left:4px; width:calc(50% - 4px); height:calc(100% - 8px); background:var(--red); border-radius:9px; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 4px 16px rgba(192,57,43,0.4); }
+        .tab-slider.right { transform:translateX(calc(100% + 0px)); }
+
+        .form-title { font-size:1.5rem; font-weight:700; color:var(--text); margin-bottom:6px; letter-spacing:-0.3px; }
+        .form-subtitle { font-size:0.75rem; color:var(--text-muted); margin-bottom:26px; line-height:1.6; font-weight:400; }
+
+        .input-group { position:relative; margin-bottom:16px; }
+        .input-label { display:block; font-size:0.65rem; font-weight:600; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+        .input-wrap { position:relative; display:flex; align-items:center; }
+        .input-icon { position:absolute; left:16px; color:var(--text-dim); font-size:0.85rem; transition:color var(--transition); pointer-events:none; z-index:1; }
+        .form-input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px 16px 14px 44px; font-size:0.88rem; font-weight:400; color:var(--text); outline:none; transition:border-color var(--transition),box-shadow var(--transition),background var(--transition); }
+        .form-input::placeholder { color:var(--text-dim); }
+        .form-input:focus { border-color:var(--red); background:#1f1f1f; box-shadow:0 0 0 3px rgba(192,57,43,0.18); }
+        .input-wrap:focus-within .input-icon { color:var(--red); }
+        .pw-toggle { position:absolute; right:14px; color:var(--text-dim); font-size:0.85rem; cursor:pointer; transition:color var(--transition); padding:4px; z-index:1; }
+        .pw-toggle:hover { color:var(--text); }
+
+        .error-msg { display:none; align-items:center; gap:8px; background:rgba(192,57,43,0.1); border:1px solid rgba(192,57,43,0.3); border-radius:10px; padding:10px 14px; font-size:0.75rem; color:var(--red-light); margin-bottom:16px; animation:errorPop 0.3s ease; }
+        .error-msg.show { display:flex; }
+        @keyframes errorPop { from{opacity:0;transform:scale(0.96)} to{opacity:1;transform:scale(1)} }
+
+        .forgot-row { display:flex; justify-content:flex-end; margin-top:-8px; margin-bottom:22px; }
+        .forgot-link { font-size:0.72rem; color:var(--text-muted); cursor:pointer; transition:color var(--transition); font-weight:500; }
+        .forgot-link:hover { color:var(--red-light); }
+
+        .submit-btn { width:100%; padding:15px; background:var(--red); color:#fff; border-radius:13px; font-size:0.88rem; font-weight:700; letter-spacing:0.3px; transition:background var(--transition),transform var(--transition),box-shadow var(--transition); box-shadow:0 6px 24px rgba(192,57,43,0.4); position:relative; overflow:hidden; margin-bottom:20px; display:flex; align-items:center; justify-content:center; }
+        .submit-btn:hover { background:var(--red-light); box-shadow:0 10px 32px rgba(192,57,43,0.55); }
+        .submit-btn:active { transform:scale(0.97); }
+        .submit-btn.loading { pointer-events:none; opacity:0.8; }
+        .submit-btn .btn-text { transition:opacity 0.2s; }
+        .submit-btn .btn-spinner { display:none; }
+        .submit-btn.loading .btn-text { display:none; }
+        .submit-btn.loading .btn-spinner { display:flex; align-items:center; justify-content:center; width:100%; }
+        .spinner { width:20px; height:20px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; margin:0 auto; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+
+        .divider { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+        .divider-line { flex:1; height:1px; background:var(--border); }
+        .divider-text { font-size:0.62rem; color:var(--text-dim); letter-spacing:1px; font-weight:600; }
+
+        .social-row { display:flex; gap:12px; margin-bottom:20px; }
+        .social-btn { flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:var(--surface2); border:1px solid var(--border); border-radius:12px; font-size:0.75rem; color:var(--text-muted); font-weight:600; transition:background var(--transition),border-color var(--transition),color var(--transition),transform var(--transition); }
+        .social-btn:hover { background:#2a2a2a; border-color:#3a3a3a; color:var(--text); transform:translateY(-1px); }
+        .social-btn:active { transform:scale(0.96); }
+        .social-btn i { font-size:0.95rem; }
+
+        .switch-text { text-align:center; font-size:0.75rem; color:var(--text-muted); }
+        .switch-link { color:var(--red-light); font-weight:700; cursor:pointer; transition:color var(--transition); }
+        .switch-link:hover { color:var(--red); }
+
+        .terms-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:20px; }
+        .terms-check { width:18px; height:18px; accent-color:var(--red); margin-top:1px; flex-shrink:0; cursor:pointer; }
+        .terms-label { font-size:0.72rem; color:var(--text-muted); line-height:1.6; }
+        .terms-label a { color:var(--red-light); }
+
+        .photo-upload-row { display:flex; align-items:center; gap:14px; }
+        .photo-preview { width:56px; height:56px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; overflow:hidden; color:var(--text-dim); font-size:1.2rem; flex-shrink:0; }
+        .photo-preview img { width:100%; height:100%; object-fit:cover; }
+        .photo-upload-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; font-size:0.75rem; color:var(--text-muted); font-weight:600; cursor:pointer; transition:background var(--transition), border-color var(--transition), color var(--transition); }
+        .photo-upload-btn:hover { background:#2a2a2a; border-color:#3a3a3a; color:var(--text); }
+
+        .strength-wrap { margin-top:8px; display:none; }
+        .strength-wrap.show { display:block; }
+        .strength-bars { display:flex; gap:4px; margin-bottom:4px; }
+        .strength-bar { flex:1; height:3px; border-radius:4px; background:var(--border); transition:background 0.3s ease; }
+        .strength-bar.weak   { background:var(--red); }
+        .strength-bar.medium { background:#e67e22; }
+        .strength-bar.strong { background:var(--green); }
+        .strength-label { font-size:0.62rem; color:var(--text-dim); font-weight:500; }
+
+        .form-input.valid { border-color:var(--green); }
+        .input-check { position:absolute; right:14px; color:var(--green); font-size:0.8rem; opacity:0; transition:opacity 0.3s ease; pointer-events:none; }
+        .input-check.show { opacity:1; }
+
+        .panel { transition:opacity 0.3s ease, transform 0.3s ease; }
+        .panel.hidden-panel { display:none; }
+
+        /* ── WELCOME MODAL ── */
+        .welcome-overlay { position:fixed; inset:0; background:var(--bg); z-index:999; display:flex; align-items:center; justify-content:center; padding:0; opacity:0; animation:overlayFadeIn 0.4s ease 0.1s forwards; }
+        @keyframes overlayFadeIn { to{opacity:1} }
+        .welcome-overlay.hidden { display:none; }
+
+        .welcome-card { background:var(--surface); border:1px solid var(--border); border-radius:0; padding:80px 36px 60px; max-width:400px; width:100%; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; position:relative; overflow:hidden; animation:welcomePop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both; box-shadow:0 40px 80px rgba(0,0,0,0.6),0 0 60px rgba(192,57,43,0.12); }
+        @keyframes welcomePop { from{opacity:0;transform:scale(0.7) translateY(30px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+        .welcome-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--red),var(--red-light),#ff8f6b,var(--red)); animation:gradientSlide 2s linear infinite; }
+        @keyframes gradientSlide { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+
+        .welcome-icon-wrap { width:80px; height:80px; margin:0 auto 20px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; }
+        .welcome-icon-wrap::after { content:''; position:absolute; inset:-8px; border-radius:30px; border:1px solid rgba(192,57,43,0.2); animation:welcomeRingPulse 2s ease-in-out infinite; }
+        @keyframes welcomeRingPulse { 0%,100%{transform:scale(1);opacity:0.6} 50%{transform:scale(1.1);opacity:0} }
+
+        .welcome-avatar { width:72px; height:72px; border-radius:50%; object-fit:cover; border:2.5px solid var(--red); animation:iconBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.5s both; }
+        @keyframes iconBounce { from{transform:scale(0) rotate(-20deg)} to{transform:scale(1) rotate(0deg)} }
+
+        .welcome-title { font-size:1.8rem; font-weight:700; color:var(--text); margin-bottom:8px; letter-spacing:-0.5px; animation:textSlideUp 0.5s ease 0.4s both; }
+        .welcome-name { color:var(--red); }
+        .welcome-sub { font-size:0.78rem; color:var(--text-muted); line-height:1.7; margin-bottom:28px; animation:textSlideUp 0.5s ease 0.5s both; font-weight:400; }
+        @keyframes textSlideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+        .welcome-stats { display:flex; gap:1px; background:var(--border); border-radius:14px; overflow:hidden; margin-bottom:24px; animation:textSlideUp 0.5s ease 0.55s both; }
+        .w-stat { flex:1; background:var(--surface2); padding:22px 10px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+        .w-stat-val { font-size:1.1rem; font-weight:700; color:var(--text); }
+        .w-stat-label { font-size:0.6rem; color:var(--text-muted); letter-spacing:0.5px; font-weight:500; text-transform:uppercase; }
+
+        .welcome-top { display:flex; flex-direction:column; align-items:center; gap:16px; width:100%; }
+
+        .welcome-proceed-btn { width:100%; padding:17px; background:var(--red); color:#fff; border-radius:13px; font-size:0.88rem; font-weight:700; letter-spacing:0.3px; box-shadow:0 8px 24px rgba(192,57,43,0.4); transition:background var(--transition),transform var(--transition),box-shadow var(--transition); animation:textSlideUp 0.5s ease 0.6s both; margin-top:auto; flex-shrink:0; }
+        .welcome-proceed-btn:hover { background:var(--red-light); box-shadow:0 12px 32px rgba(192,57,43,0.55); }
+        .welcome-proceed-btn:active { transform:scale(0.97); }
+
+        .sparkle { position:absolute; width:6px; height:6px; border-radius:50%; background:var(--red); animation:sparkleFly 2s ease-in-out infinite; }
+        .sparkle:nth-child(1) { top:20%; left:10%; animation-delay:0s; }
+        .sparkle:nth-child(2) { top:40%; right:8%; animation-delay:0.4s; width:4px; height:4px; }
+        .sparkle:nth-child(3) { bottom:25%; left:14%; animation-delay:0.8s; width:5px; height:5px; }
+        .sparkle:nth-child(4) { bottom:15%; right:12%; animation-delay:1.2s; width:3px; height:3px; }
+        @keyframes sparkleFly { 0%,100%{transform:translateY(0) scale(1);opacity:0.6} 50%{transform:translateY(-12px) scale(1.5);opacity:0} }
+
+        .page-footer { text-align:center; margin-top:24px; font-size:0.65rem; color:var(--text-dim); letter-spacing:0.5px; animation:cardRise 0.8s cubic-bezier(0.22,1,0.36,1) 0.4s both; }
+        .page-footer span { color:var(--text-muted); }
+
+        /* ── ONBOARDING MODAL ── */
+        .onboarding-overlay { position:fixed; inset:0; background:var(--bg); z-index:999; display:flex; align-items:center; justify-content:center; padding:0; opacity:0; animation:overlayFadeIn 0.4s ease 0.1s forwards; }
+        .onboarding-overlay.hidden { display:none; }
+
+        .onboarding-card { background:var(--surface); border:1px solid var(--border); border-radius:0; padding:56px 32px 40px; max-width:400px; width:100%; min-height:100dvh; display:flex; flex-direction:column; position:relative; overflow-y:auto; animation:cardRise 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s both; }
+
+        .onboarding-back { width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:50%; color:var(--text-muted); font-size:1rem; margin-bottom:28px; opacity:0.5; }
+
+        .onboarding-title { font-size:1.6rem; font-weight:700; color:var(--text); margin-bottom:6px; letter-spacing:-0.3px; }
+        .onboarding-sub { font-size:0.78rem; color:var(--text-muted); margin-bottom:40px; }
+
+        .onboarding-textarea { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px 16px; font-size:0.85rem; font-weight:400; color:var(--text); outline:none; resize:none; min-height:88px; line-height:1.5; font-family:inherit; transition:border-color var(--transition),box-shadow var(--transition),background var(--transition); }
+        .onboarding-textarea::placeholder { color:var(--text-dim); }
+        .onboarding-textarea:focus { border-color:var(--red); background:#1f1f1f; box-shadow:0 0 0 3px rgba(192,57,43,0.18); }
+
+        .onboarding-terms-row { display:flex; align-items:center; justify-content:space-between; gap:14px; margin:8px 0 32px; }
+        .onboarding-terms-text { font-size:0.8rem; color:var(--text-muted); font-weight:500; }
+
+        .onboarding-check { width:26px; height:26px; border-radius:8px; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background var(--transition), border-color var(--transition); flex-shrink:0; }
+        .onboarding-check i { color:#fff; font-size:0.68rem; opacity:0; transition:opacity 0.2s ease; }
+        .onboarding-check.checked { background:var(--red); border-color:var(--red); }
+        .onboarding-check.checked i { opacity:1; }
+
+        .onboarding-submit-btn { width:100%; padding:16px; background:var(--red); color:#fff; border-radius:13px; font-size:0.88rem; font-weight:700; letter-spacing:0.3px; box-shadow:0 8px 24px rgba(192,57,43,0.4); transition:background var(--transition),transform var(--transition),box-shadow var(--transition); margin-top:auto; display:flex; align-items:center; justify-content:center; }
+        .onboarding-submit-btn:hover { background:var(--red-light); box-shadow:0 12px 32px rgba(192,57,43,0.55); }
+        .onboarding-submit-btn:active { transform:scale(0.97); }
+        .onboarding-submit-btn.loading { pointer-events:none; opacity:0.8; }
+        .onboarding-submit-btn .btn-spinner { display:none; }
+        .onboarding-submit-btn.loading .btn-text { display:none; }
+        .onboarding-submit-btn.loading .btn-spinner { display:flex; align-items:center; justify-content:center; width:100%; }
+
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-9px)} 40%{transform:translateX(9px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+        .shake { animation:shake 0.4s ease; }
+
+        @media (max-width:420px) {
+            .card { padding:28px 22px 26px; border-radius:20px; }
+            .brand-name { font-size:1.5rem; }
+            .welcome-card { padding:36px 24px 28px; }
+            .welcome-title { font-size:1.5rem; }
+            .onboarding-card { padding:40px 24px 28px; }
+            .onboarding-title { font-size:1.4rem; }
+        }
+
+        html.sw-hide-login .page-wrap { visibility: hidden; }
+    </style>
+</head>
+
+<body>
+
+    <script>
+        // If we're returning here to show the welcome overlay (e.g. from
+        // verification.html), hide the login form immediately/synchronously
+        // — before first paint — so it never flashes while the session check
+        // resolves. Runs before .page-wrap is even parsed.
+        if (sessionStorage.getItem('sw_show_welcome')) {
+            document.documentElement.classList.add('sw-hide-login');
+        }
+    </script>
+
+    <div class="grid-overlay"></div>
+    <div class="glow-spot"></div>
+    <div class="glow-spot right"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- ════════ ONBOARDING MODAL ════════ -->
+    <div class="onboarding-overlay hidden" id="onboardingOverlay">
+        <div class="onboarding-card">
+            <i class="fa-solid fa-arrow-left onboarding-back"></i>
+
+            <h2 class="onboarding-title">Let's Get Started</h2>
+            <p class="onboarding-sub">Fill the form to continue</p>
+
+            <div class="error-msg" id="onboardingError">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="onboardingErrorText">Please fill all fields correctly.</span>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Why do you need the money</label>
+                <textarea class="onboarding-textarea" id="obReason" placeholder="e.g. Building an emergency fund, paying off debt, saving for a home…"></textarea>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">What will you do with the money</label>
+                <textarea class="onboarding-textarea" id="obUse" placeholder="e.g. Invest in BTC, grow long-term savings, fund a new project…"></textarea>
+            </div>
+
+            <div class="onboarding-terms-row">
+                <span class="onboarding-terms-text">I agree with terms of use</span>
+                <div class="onboarding-check" id="obTermsCheck"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <button class="onboarding-submit-btn" id="onboardingSubmitBtn">
+                <span class="btn-text">Submit</span>
+                <span class="btn-spinner"><div class="spinner"></div></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ════════ WELCOME MODAL ════════ -->
+    <div class="welcome-overlay hidden" id="welcomeOverlay">
+        <div class="welcome-card">
+            <div class="welcome-top">
+                <span class="sparkle"></span>
+                <span class="sparkle"></span>
+                <span class="sparkle"></span>
+                <span class="sparkle"></span>
+                <div class="welcome-icon-wrap">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23222'/><circle cx='50' cy='38' r='18' fill='%23444'/><ellipse cx='50' cy='88' rx='32' ry='24' fill='%23444'/></svg>" alt="User" class="welcome-avatar" id="welcomeAvatarImg" />
+                </div>
+                <h2 class="welcome-title">Welcome back,<br><span class="welcome-name" id="welcomeName">Shannon</span></h2>
+                <p class="welcome-sub" id="welcomeSub">Your investment is secure and performing well. We're glad to have you back.</p>
+                <div class="welcome-stats">
+                    <div class="w-stat">
+                        <span class="w-stat-val" id="welcomeBalance">$250,000.00</span>
+                        <span class="w-stat-label">Balance</span>
+                    </div>
+                    <div class="w-stat">
+                        <span class="w-stat-val">+4.2%</span>
+                        <span class="w-stat-label">Return</span>
+                    </div>
+                    <div class="w-stat">
+                        <span class="w-stat-val">1</span>
+                        <span class="w-stat-label">Investments</span>
+                    </div>
+                </div>
+            </div>
+            <button class="welcome-proceed-btn" id="proceedBtn">
+                Enter Dashboard &nbsp;<i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ════════ PAGE ════════ -->
+    <div class="page-wrap">
+
+        <div class="brand">
+            <div class="logo-ring">
+                <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="36" cy="36" r="34" stroke="#c0392b" stroke-width="2" />
+                    <path d="M20 46 Q36 16 52 46" stroke="#c0392b" stroke-width="3" fill="none" stroke-linecap="round" />
+                    <circle cx="36" cy="46" r="4.5" fill="#c0392b" />
+                    <circle cx="36" cy="36" r="6" stroke="rgba(192,57,43,0.3)" stroke-width="1" fill="none" />
+                </svg>
+            </div>
+            <div>
+                <div class="brand-name">Sage <span>Wealth</span></div>
+                <div class="brand-tagline">Investment Platform</div>
+            </div>
+        </div>
+
+        <div class="card" id="mainCard">
+
+            <div class="tab-switch" id="tabSwitch">
+                <div class="tab-slider" id="tabSlider"></div>
+                <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+                <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">Create Account</button>
+            </div>
+
+            <!-- ── LOGIN PANEL ── -->
+            <div class="panel" id="loginPanel">
+                <h2 class="form-title">Sign in</h2>
+                <p class="form-subtitle">Enter your credentials to access your investment dashboard.</p>
+
+                <div class="error-msg" id="loginError">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="loginErrorText">Invalid username or password.</span>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Email</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" class="form-input" id="loginEmail" placeholder="you@example.com" autocomplete="email" />
+                        <i class="fa-solid fa-check input-check" id="loginEmailCheck"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Password</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" autocomplete="current-password" />
+                        <i class="fa-regular fa-eye pw-toggle" id="loginPwToggle"></i>
+                    </div>
+                </div>
+
+                <div class="forgot-row">
+                    <span class="forgot-link" onclick="forgotPassword()">Forgot password?</span>
+                </div>
+
+                <button class="submit-btn" id="loginBtn" onclick="handleLogin()">
+                    <span class="btn-text">Sign In &nbsp;<i class="fa-solid fa-arrow-right-to-bracket"></i></span>
+                    <span class="btn-spinner"><div class="spinner"></div></span>
+                </button>
+
+                <div class="divider">
+                    <div class="divider-line"></div>
+                    <span class="divider-text">OR CONTINUE WITH</span>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="social-row">
+                    <button class="social-btn" onclick="socialLogin('Google')">
+                        <i class="fa-brands fa-google"></i> Google
+                    </button>
+                    <button class="social-btn" onclick="socialLogin('Apple')">
+                        <i class="fa-brands fa-apple"></i> Apple
+                    </button>
+                </div>
+
+                <p class="switch-text">
+                    New to Sage Wealth?
+                    <span class="switch-link" onclick="switchTab('register')">Create account</span>
+                </p>
+            </div>
+
+            <!-- ── REGISTER PANEL ── -->
+            <div class="panel hidden-panel" id="registerPanel">
+                <h2 class="form-title">Create account</h2>
+                <p class="form-subtitle">Join thousands of investors growing their wealth with Sage.</p>
+
+                <div class="error-msg" id="registerError">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="registerErrorText">Please fill all fields correctly.</span>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Full Name</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-id-card input-icon"></i>
+                        <input type="text" class="form-input" id="regName" placeholder="Your full name" required />
+                        <i class="fa-solid fa-check input-check" id="regNameCheck"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Profile Picture <span style="color:var(--text-dim); text-transform:none; font-weight:400;">(optional)</span></label>
+                    <div class="photo-upload-row">
+                        <div class="photo-preview" id="regPhotoPreview"><i class="fa-solid fa-user"></i></div>
+                        <label class="photo-upload-btn" for="regPhotoInput"><i class="fa-solid fa-camera"></i> Choose Photo</label>
+                        <input type="file" accept="image/*" id="regPhotoInput" style="display:none" />
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Email Address</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" class="form-input" id="regEmail" placeholder="you@example.com" required />
+                        <i class="fa-solid fa-check input-check" id="regEmailCheck"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Phone Number</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        <input type="tel" class="form-input" id="regPhone" placeholder="+1 (555) 123-4567" autocomplete="tel" required minlength="7" />
+                        <i class="fa-solid fa-check input-check" id="regPhoneCheck"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Password</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" class="form-input" id="regPassword" placeholder="Create a strong password" required minlength="8" />
+                        <i class="fa-regular fa-eye pw-toggle" id="regPwToggle"></i>
+                    </div>
+                    <div class="strength-wrap" id="strengthWrap">
+                        <div class="strength-bars">
+                            <div class="strength-bar" id="sb1"></div>
+                            <div class="strength-bar" id="sb2"></div>
+                            <div class="strength-bar" id="sb3"></div>
+                            <div class="strength-bar" id="sb4"></div>
+                        </div>
+                        <span class="strength-label" id="strengthLabel">Password strength</span>
+                    </div>
+                </div>
+
+                <div class="terms-row">
+                    <input type="checkbox" class="terms-check" id="termsCheck" required />
+                    <label class="terms-label" for="termsCheck">
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> of Sage Wealth Investment.
+                    </label>
+                </div>
+
+                <button class="submit-btn" id="registerBtn" onclick="handleRegister()">
+                    <span class="btn-text">Create Account &nbsp;<i class="fa-solid fa-user-plus"></i></span>
+                    <span class="btn-spinner"><div class="spinner"></div></span>
+                </button>
+
+                <p class="switch-text">
+                    Already have an account?
+                    <span class="switch-link" onclick="switchTab('login')">Sign in</span>
+                </p>
+            </div>
+
+        </div>
+
+        <p class="page-footer">
+            © 2025 <span>Sage Wealth Investment Ltd.</span> · All rights reserved ·
+            <a href="#" style="color:var(--text-dim)">Privacy</a>
+        </p>
+
+    </div>
+
+    <script type="module">
+        import { registerAccount, loginAccount, resetPassword, redirectIfLoggedIn, updateOnboardingAnswers, requireSession } from './session.js';
+        window.sw = { registerAccount, loginAccount, resetPassword, redirectIfLoggedIn, updateOnboardingAnswers };
+
+        if (sessionStorage.getItem('sw_show_welcome')) {
+            sessionStorage.removeItem('sw_show_welcome');
+            requireSession().then(({ profile }) => {
+                if (profile) {
+                    showWelcome(profile, 'Your account has been created. Welcome to Sage Wealth — your financial journey begins now.');
+                } else {
+                    document.documentElement.classList.remove('sw-hide-login');
+                    redirectIfLoggedIn();
+                }
+            });
+        } else {
+            redirectIfLoggedIn();
+        }
+    </script>
+
+    <script>
+        /* ── Particles ── */
+        (function () {
+            for (let i = 0; i < 18; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = 2 + Math.random() * 4;
+                p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;bottom:${-10+Math.random()*20}px;animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*12}s;opacity:0;`;
+                document.body.appendChild(p);
+            }
+        })();
+
+        /* ── Canvas lines ── */
+        (function () {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let W, H, lines;
+            function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+            function mkLine() { return { x: Math.random()*W, y: Math.random()*H, len: 40+Math.random()*100, speed: 0.2+Math.random()*0.5, opacity: 0.04+Math.random()*0.08, angle: Math.random()*360*Math.PI/180 }; }
+            function init() { resize(); lines = Array.from({length:20}, mkLine); }
+            function draw() {
+                ctx.clearRect(0,0,W,H);
+                lines.forEach(l => {
+                    ctx.save(); ctx.globalAlpha=l.opacity; ctx.strokeStyle='#c0392b'; ctx.lineWidth=1;
+                    ctx.beginPath(); ctx.moveTo(l.x,l.y); ctx.lineTo(l.x+Math.cos(l.angle)*l.len, l.y+Math.sin(l.angle)*l.len); ctx.stroke(); ctx.restore();
+                    l.y -= l.speed;
+                    if (l.y+l.len < 0) Object.assign(l, mkLine(), {y: H+l.len});
+                });
+                requestAnimationFrame(draw);
+            }
+            window.addEventListener('resize', ()=>{ resize(); lines=Array.from({length:20},mkLine); });
+            init(); draw();
+        })();
+
+        let currentTab = 'login';
+
+        /* ── Tab switch ── */
+        function switchTab(tab) {
+            currentTab = tab;
+            const slider = document.getElementById('tabSlider');
+            const loginPanel = document.getElementById('loginPanel');
+            const regPanel = document.getElementById('registerPanel');
+            document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+            document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+            document.getElementById('loginError').classList.remove('show');
+            document.getElementById('registerError').classList.remove('show');
+
+            if (tab === 'login') {
+                slider.classList.remove('right');
+                regPanel.style.opacity = '0'; regPanel.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    regPanel.classList.add('hidden-panel');
+                    loginPanel.classList.remove('hidden-panel');
+                    loginPanel.style.opacity = '0'; loginPanel.style.transform = 'translateX(-20px)';
+                    requestAnimationFrame(() => {
+                        loginPanel.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        loginPanel.style.opacity = '1'; loginPanel.style.transform = 'translateX(0)';
+                    });
+                }, 200);
+            } else {
+                slider.classList.add('right');
+                loginPanel.style.opacity = '0'; loginPanel.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    loginPanel.classList.add('hidden-panel');
+                    regPanel.classList.remove('hidden-panel');
+                    regPanel.style.opacity = '0'; regPanel.style.transform = 'translateX(20px)';
+                    requestAnimationFrame(() => {
+                        regPanel.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        regPanel.style.opacity = '1'; regPanel.style.transform = 'translateX(0)';
+                    });
+                }, 200);
+            }
+        }
+
+        /* ── Password toggles ── */
+        function setupPwToggle(inputId, toggleId) {
+            const input = document.getElementById(inputId);
+            const toggle = document.getElementById(toggleId);
+            if (!input || !toggle) return;
+            toggle.addEventListener('click', () => {
+                const shown = input.type === 'text';
+                input.type = shown ? 'password' : 'text';
+                toggle.classList.toggle('fa-eye', shown);
+                toggle.classList.toggle('fa-eye-slash', !shown);
+            });
+        }
+        setupPwToggle('loginPassword', 'loginPwToggle');
+        setupPwToggle('regPassword', 'regPwToggle');
+
+        document.getElementById('loginEmail').addEventListener('input', function () {
+            const check = document.getElementById('loginEmailCheck');
+            const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+            check.classList.toggle('show', ok);
+            this.classList.toggle('valid', ok);
+        });
+
+        function liveCheck(inputId, checkId, validator) {
+            const inp = document.getElementById(inputId);
+            if (!inp) return;
+            const check = document.getElementById(checkId);
+            inp.addEventListener('input', function () {
+                const ok = validator(this.value);
+                check.classList.toggle('show', ok);
+                this.classList.toggle('valid', ok);
+            });
+        }
+        liveCheck('regName',  'regNameCheck',  v => v.trim().split(' ').length >= 2 && v.trim().length >= 4);
+        liveCheck('regEmail', 'regEmailCheck', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+        liveCheck('regPhone', 'regPhoneCheck', v => v.replace(/[^0-9]/g, '').length >= 7);
+
+        /* ── Register photo preview ── */
+        let regPhotoFile = null;
+        document.getElementById('regPhotoInput').addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            regPhotoFile = file;
+            const preview = document.getElementById('regPhotoPreview');
+            const reader = new FileReader();
+            reader.onload = e => { preview.innerHTML = `<img src="${e.target.result}" alt="Preview" />`; };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('regPassword').addEventListener('input', function () {
+            const val = this.value;
+            const wrap = document.getElementById('strengthWrap');
+            const label = document.getElementById('strengthLabel');
+            const bars = ['sb1','sb2','sb3','sb4'].map(id => document.getElementById(id));
+            if (!val) { wrap.classList.remove('show'); return; }
+            wrap.classList.add('show');
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+            const colours = ['weak','medium','strong','strong'];
+            const lbls    = ['Weak','Fair','Good','Strong'];
+            bars.forEach((b, i) => { b.className = 'strength-bar'; if (i < score) b.classList.add(colours[score-1]); });
+            label.textContent = 'Strength: ' + (lbls[score-1] || 'Weak');
+        });
+
+        /* ── Auth error → friendly message ── */
+        function firebaseErrorMessage(err) {
+            const msg = (err && err.message) || '';
+            if (/already registered|already exists/i.test(msg)) return 'That email is already registered. Try signing in instead.';
+            if (/invalid login credentials/i.test(msg)) return 'Incorrect email or password.';
+            if (/invalid.*email/i.test(msg)) return 'Please enter a valid email address.';
+            if (/password.*(at least|character)/i.test(msg)) return 'Password must be at least 8 characters.';
+            if (/rate limit|too many/i.test(msg)) return 'Too many attempts. Please try again later.';
+            if (/network|fetch/i.test(msg)) return 'Network error. Check your connection and try again.';
+            return msg || 'Something went wrong. Please try again.';
+        }
+
+        /* ── Login handler ── */
+        async function handleLogin() {
+            const email    = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const btn      = document.getElementById('loginBtn');
+            const errBox   = document.getElementById('loginError');
+            const errTxt   = document.getElementById('loginErrorText');
+            errBox.classList.remove('show');
+            if (!email || !password) {
+                errTxt.textContent = 'Please fill in both fields.';
+                errBox.classList.add('show'); shakeCard(); return;
+            }
+            btn.classList.add('loading');
+            try {
+                const { profile } = await window.sw.loginAccount(email, password);
+                btn.classList.remove('loading');
+                if (!profile) {
+                    errTxt.textContent = 'This account has no profile data (it may have been partially deleted). Please contact support or register a new account.';
+                    errBox.classList.add('show'); shakeCard();
+                    return;
+                }
+                showWelcome(profile);
+            } catch (err) {
+                btn.classList.remove('loading');
+                errTxt.textContent = firebaseErrorMessage(err);
+                errBox.classList.add('show'); shakeCard();
+                ['loginEmail','loginPassword'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.classList.add('shake');
+                    setTimeout(() => el.classList.remove('shake'), 500);
+                });
+            }
+        }
+
+        /* ── Register handler ── */
+        async function handleRegister() {
+            const name     = document.getElementById('regName').value.trim();
+            const email    = document.getElementById('regEmail').value.trim();
+            const phone    = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const terms    = document.getElementById('termsCheck').checked;
+            const btn      = document.getElementById('registerBtn');
+            const errBox   = document.getElementById('registerError');
+            const errTxt   = document.getElementById('registerErrorText');
+            errBox.classList.remove('show');
+            if (!name || !email || !phone || !password) { errTxt.textContent = 'Please fill in all fields.'; errBox.classList.add('show'); shakeCard(); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errTxt.textContent = 'Please enter a valid email address.'; errBox.classList.add('show'); shakeCard(); return; }
+            if (phone.replace(/[^0-9]/g, '').length < 7) { errTxt.textContent = 'Please enter a valid phone number.'; errBox.classList.add('show'); shakeCard(); return; }
+            if (password.length < 8) { errTxt.textContent = 'Password must be at least 8 characters.'; errBox.classList.add('show'); shakeCard(); return; }
+            if (!terms) { errTxt.textContent = 'You must agree to the Terms of Service.'; errBox.classList.add('show'); shakeCard(); return; }
+
+            btn.classList.add('loading');
+            try {
+                await window.sw.registerAccount({ name, email, phone, password, photoFile: regPhotoFile });
+                btn.classList.remove('loading');
+                document.getElementById('onboardingOverlay').classList.remove('hidden');
+            } catch (err) {
+                btn.classList.remove('loading');
+                errTxt.textContent = firebaseErrorMessage(err);
+                errBox.classList.add('show'); shakeCard();
+            }
+        }
+
+        /* ── Welcome modal ── */
+        function showWelcome(profile, subText) {
+            document.getElementById('welcomeAvatarImg').src = profile.photoURL;
+            document.getElementById('welcomeName').textContent = (profile.name || '').split(' ')[0];
+            document.getElementById('welcomeSub').textContent = subText || "Your investment is secure and performing well. We're glad to have you back.";
+            const bal = profile.balance || 0;
+            document.getElementById('welcomeBalance').textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('welcomeOverlay').classList.remove('hidden');
+        }
+
+        /* ── Onboarding modal ── */
+        const obTermsCheck = document.getElementById('obTermsCheck');
+        obTermsCheck.addEventListener('click', () => {
+            obTermsCheck.classList.toggle('checked');
+        });
+
+        document.getElementById('onboardingSubmitBtn').addEventListener('click', async () => {
+            const reason = document.getElementById('obReason').value.trim();
+            const use    = document.getElementById('obUse').value.trim();
+            const agreed = obTermsCheck.classList.contains('checked');
+            const btn    = document.getElementById('onboardingSubmitBtn');
+            const errBox = document.getElementById('onboardingError');
+            const errTxt = document.getElementById('onboardingErrorText');
+            errBox.classList.remove('show');
+
+            if (reason.length < 8 || use.length < 8) {
+                errTxt.textContent = 'Please fill in both fields with at least 8 characters.';
+                errBox.classList.add('show');
+                return;
+            }
+            if (!agreed) {
+                errTxt.textContent = 'You must agree to the terms of use.';
+                errBox.classList.add('show');
+                return;
+            }
+
+            btn.classList.add('loading');
+            try {
+                await window.sw.updateOnboardingAnswers(reason, use);
+                window.location.href = 'verification.html';
+            } catch (err) {
+                btn.classList.remove('loading');
+                errTxt.textContent = 'Something went wrong. Please try again.';
+                errBox.classList.add('show');
+            }
+        });
+
+        document.getElementById('proceedBtn').addEventListener('click', () => {
+            const overlay = document.getElementById('welcomeOverlay');
+            const card    = overlay.querySelector('.welcome-card');
+            card.style.transition  = 'transform 0.4s cubic-bezier(0.4,0,1,1), opacity 0.4s ease';
+            card.style.transform   = 'scale(1.1) translateY(-20px)';
+            card.style.opacity     = '0';
+            overlay.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => { overlay.style.opacity = '0'; }, 200);
+            setTimeout(() => { window.location.href = 'main.html'; }, 600);
+        });
+
+        /* ── Helpers ── */
+        function shakeCard() {
+            const card = document.getElementById('mainCard');
+            card.classList.remove('shake');
+            void card.offsetWidth;
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 500);
+        }
+
+        function forgotPassword() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const err = document.getElementById('loginError');
+            const txt = document.getElementById('loginErrorText');
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                txt.textContent = 'Enter your email above first, then tap "Forgot password?" again.';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 4000);
+                return;
+            }
+            window.sw.resetPassword(email).then(() => {
+                txt.textContent = 'Password reset email sent to ' + email + '. Check your inbox.';
+                err.style.background   = 'rgba(39,174,96,0.1)';
+                err.style.borderColor  = 'rgba(39,174,96,0.3)';
+                err.style.color        = '#27ae60';
+                err.querySelector('i').className = 'fa-solid fa-circle-check';
+                err.classList.add('show');
+                setTimeout(() => {
+                    err.classList.remove('show');
+                    err.style.background  = '';
+                    err.style.borderColor = '';
+                    err.style.color       = '';
+                    err.querySelector('i').className = 'fa-solid fa-circle-exclamation';
+                }, 5000);
+            }).catch(e => {
+                txt.textContent = firebaseErrorMessage(e);
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 4000);
+            });
+        }
+
+        function socialLogin(provider) {
+            const err = document.getElementById('loginError');
+            document.getElementById('loginErrorText').textContent = `${provider} login is not available yet. Use username/password.`;
+            err.classList.add('show');
+            setTimeout(() => err.classList.remove('show'), 3000);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { if (currentTab === 'login') handleLogin(); else handleRegister(); }
+        });
+    </script>
+</body>
+</html>
