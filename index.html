@@ -840,6 +840,20 @@
         liveCheck('regEmail', 'regEmailCheck', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
         liveCheck('regPhone', 'regPhoneCheck', v => v.replace(/[^0-9]/g, '').length >= 7);
 
+        /* ── Combine the selected dial code with the typed local number.
+           Strips any '+', spaces, or a re-typed country code / leading trunk
+           zero from the local field so the result is always {dialCode}{digits}
+           in the correct order, never a duplicated code. ── */
+        function buildFullPhone(dialCode, localRaw) {
+            let digits = (localRaw || '').replace(/[^0-9]/g, '');
+            const dialDigits = dialCode.replace(/[^0-9]/g, '');
+            if (dialDigits && digits.startsWith(dialDigits)) {
+                digits = digits.slice(dialDigits.length);
+            }
+            digits = digits.replace(/^0+/, '');
+            return digits ? dialCode + digits : '';
+        }
+
         /* ── Register photo preview ── */
         let regPhotoFile = null;
         document.getElementById('regPhotoInput').addEventListener('change', function () {
@@ -922,7 +936,7 @@
             const email     = document.getElementById('regEmail').value.trim();
             const phoneLocal = document.getElementById('regPhone').value.trim();
             const dialCode  = document.getElementById('regCountryDialCode').value;
-            const phone     = phoneLocal ? dialCode + ' ' + phoneLocal : '';
+            const phone     = buildFullPhone(dialCode, phoneLocal);
             const password  = document.getElementById('regPassword').value;
             const terms    = document.getElementById('termsCheck').checked;
             const btn      = document.getElementById('registerBtn');
@@ -931,7 +945,7 @@
             errBox.classList.remove('show');
             if (!name || !email || !phone || !password) { errTxt.textContent = 'Please fill in all fields.'; errBox.classList.add('show'); shakeCard(); return; }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errTxt.textContent = 'Please enter a valid email address.'; errBox.classList.add('show'); shakeCard(); return; }
-            if (phone.replace(/[^0-9]/g, '').length < 7) { errTxt.textContent = 'Please enter a valid phone number.'; errBox.classList.add('show'); shakeCard(); return; }
+            if (phoneLocal.replace(/[^0-9]/g, '').length < 7) { errTxt.textContent = 'Please enter a valid phone number.'; errBox.classList.add('show'); shakeCard(); return; }
             if (password.length < 8) { errTxt.textContent = 'Password must be at least 8 characters.'; errBox.classList.add('show'); shakeCard(); return; }
             if (!terms) { errTxt.textContent = 'You must agree to the Terms of Service.'; errBox.classList.add('show'); shakeCard(); return; }
 
