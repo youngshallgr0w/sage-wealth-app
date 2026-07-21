@@ -994,14 +994,18 @@ input { font-family: inherit; }
 
 .pin-step {
   display: none; flex-direction: column;
-  height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;
-  padding: 24px 24px 40px;
+  height: 100%; padding: 24px 24px 40px;
 }
 .pin-step.active { display: flex; }
 .pin-step.step-in { animation: stepIn 0.35s cubic-bezier(0.4,0,0.2,1) both; }
 @keyframes stepIn {
   from { opacity: 0; transform: translateX(16px); }
   to   { opacity: 1; transform: translateX(0); }
+}
+
+.pin-step-scroll {
+  flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column;
 }
 
 .pin-step-topbar { display: flex; align-items: center; padding-top: 8px; flex-shrink: 0; }

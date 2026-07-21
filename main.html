@@ -314,98 +314,106 @@
 
     <!-- STEP 0: INTRO -->
     <div class="pin-step active" id="pinStepIntro">
-      <div class="pin-step-body pin-step-center">
-        <div class="pin-illustration">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="pinShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#4fc3f7" />
-                <stop offset="100%" stop-color="#1e88e5" />
-              </linearGradient>
-            </defs>
-            <path d="M32 3 C38 9 46 11 54 11 C54 30 50 46 32 58 C14 46 10 30 10 11 C18 11 26 9 32 3 Z" fill="url(#pinShieldGrad)" />
-            <rect x="24" y="27" width="16" height="13" rx="3" fill="#fff" />
-            <path d="M27 27 v-4 a5 5 0 0 1 10 0 v4" fill="none" stroke="#fff" stroke-width="3" />
-            <circle cx="32" cy="33.5" r="2" fill="#1e88e5" />
-            <circle cx="47" cy="43" r="9" fill="#43a047" />
-            <path d="M42.5 43 l3 3 l6 -6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+      <div class="pin-step-scroll">
+        <div class="pin-step-body pin-step-center">
+          <div class="pin-illustration">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="pinShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#4fc3f7" />
+                  <stop offset="100%" stop-color="#1e88e5" />
+                </linearGradient>
+              </defs>
+              <path d="M32 3 C38 9 46 11 54 11 C54 30 50 46 32 58 C14 46 10 30 10 11 C18 11 26 9 32 3 Z" fill="url(#pinShieldGrad)" />
+              <rect x="24" y="27" width="16" height="13" rx="3" fill="#fff" />
+              <path d="M27 27 v-4 a5 5 0 0 1 10 0 v4" fill="none" stroke="#fff" stroke-width="3" />
+              <circle cx="32" cy="33.5" r="2" fill="#1e88e5" />
+              <circle cx="47" cy="43" r="9" fill="#43a047" />
+              <path d="M42.5 43 l3 3 l6 -6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <h2 class="pin-step-heading">Set a PIN</h2>
+          <p class="pin-step-sub">Add a PIN code to keep your account secure and sign in faster next time.</p>
         </div>
-        <h2 class="pin-step-heading">Set a PIN</h2>
-        <p class="pin-step-sub">Add a PIN code to keep your account secure and sign in faster next time.</p>
       </div>
       <button class="pin-step-btn" id="pinIntroContinue">Continue</button>
     </div>
 
     <!-- STEP 1: CREATE -->
     <div class="pin-step" id="pinStepCreate">
-      <header class="pin-step-topbar">
-        <button class="pin-back-btn" id="pinCreateBack"><i class="fa-solid fa-arrow-left"></i></button>
-      </header>
-      <div class="pin-step-body">
-        <h2 class="pin-step-heading">Create account PIN</h2>
-        <p class="pin-step-sub">Choose a 4 digit PIN</p>
-        <div class="pin-dots-row" id="setupDotsCreate"></div>
-      </div>
-      <div class="pin-keypad" id="pinKeypadCreate">
-        <button class="key-btn" data-val="1">1</button>
-        <button class="key-btn" data-val="2">2<span class="key-sub">ABC</span></button>
-        <button class="key-btn" data-val="3">3<span class="key-sub">DEF</span></button>
-        <button class="key-btn" data-val="4">4<span class="key-sub">GHI</span></button>
-        <button class="key-btn" data-val="5">5<span class="key-sub">JKL</span></button>
-        <button class="key-btn" data-val="6">6<span class="key-sub">MNO</span></button>
-        <button class="key-btn" data-val="7">7<span class="key-sub">PQRS</span></button>
-        <button class="key-btn" data-val="8">8<span class="key-sub">TUV</span></button>
-        <button class="key-btn" data-val="9">9<span class="key-sub">WXYZ</span></button>
-        <div class="key-empty"></div>
-        <button class="key-btn" data-val="0">0</button>
-        <button class="key-btn key-del"><i class="fa-solid fa-delete-left"></i></button>
+      <div class="pin-step-scroll">
+        <header class="pin-step-topbar">
+          <button class="pin-back-btn" id="pinCreateBack"><i class="fa-solid fa-arrow-left"></i></button>
+        </header>
+        <div class="pin-step-body">
+          <h2 class="pin-step-heading">Create account PIN</h2>
+          <p class="pin-step-sub">Choose a 4 digit PIN</p>
+          <div class="pin-dots-row" id="setupDotsCreate"></div>
+        </div>
+        <div class="pin-keypad" id="pinKeypadCreate">
+          <button class="key-btn" data-val="1">1</button>
+          <button class="key-btn" data-val="2">2<span class="key-sub">ABC</span></button>
+          <button class="key-btn" data-val="3">3<span class="key-sub">DEF</span></button>
+          <button class="key-btn" data-val="4">4<span class="key-sub">GHI</span></button>
+          <button class="key-btn" data-val="5">5<span class="key-sub">JKL</span></button>
+          <button class="key-btn" data-val="6">6<span class="key-sub">MNO</span></button>
+          <button class="key-btn" data-val="7">7<span class="key-sub">PQRS</span></button>
+          <button class="key-btn" data-val="8">8<span class="key-sub">TUV</span></button>
+          <button class="key-btn" data-val="9">9<span class="key-sub">WXYZ</span></button>
+          <div class="key-empty"></div>
+          <button class="key-btn" data-val="0">0</button>
+          <button class="key-btn key-del"><i class="fa-solid fa-delete-left"></i></button>
+        </div>
       </div>
       <button class="pin-step-btn" id="pinCreateContinue" disabled>Continue</button>
     </div>
 
     <!-- STEP 2: CONFIRM -->
     <div class="pin-step" id="pinStepConfirm">
-      <header class="pin-step-topbar">
-        <button class="pin-back-btn" id="pinConfirmBack"><i class="fa-solid fa-arrow-left"></i></button>
-      </header>
-      <div class="pin-step-body">
-        <h2 class="pin-step-heading">Confirm your PIN</h2>
-        <p class="pin-step-sub">Re-enter your PIN to confirm</p>
-        <div class="pin-dots-row" id="setupDotsConfirm"></div>
-        <div class="pin-error hidden" id="pinSetupError">
-          <i class="fa-solid fa-circle-exclamation"></i>
-          <span id="pinSetupErrorMsg">PINs do not match. Try again.</span>
+      <div class="pin-step-scroll">
+        <header class="pin-step-topbar">
+          <button class="pin-back-btn" id="pinConfirmBack"><i class="fa-solid fa-arrow-left"></i></button>
+        </header>
+        <div class="pin-step-body">
+          <h2 class="pin-step-heading">Confirm your PIN</h2>
+          <p class="pin-step-sub">Re-enter your PIN to confirm</p>
+          <div class="pin-dots-row" id="setupDotsConfirm"></div>
+          <div class="pin-error hidden" id="pinSetupError">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span id="pinSetupErrorMsg">PINs do not match. Try again.</span>
+          </div>
         </div>
-      </div>
-      <div class="pin-keypad" id="pinKeypadConfirm">
-        <button class="key-btn" data-val="1">1</button>
-        <button class="key-btn" data-val="2">2<span class="key-sub">ABC</span></button>
-        <button class="key-btn" data-val="3">3<span class="key-sub">DEF</span></button>
-        <button class="key-btn" data-val="4">4<span class="key-sub">GHI</span></button>
-        <button class="key-btn" data-val="5">5<span class="key-sub">JKL</span></button>
-        <button class="key-btn" data-val="6">6<span class="key-sub">MNO</span></button>
-        <button class="key-btn" data-val="7">7<span class="key-sub">PQRS</span></button>
-        <button class="key-btn" data-val="8">8<span class="key-sub">TUV</span></button>
-        <button class="key-btn" data-val="9">9<span class="key-sub">WXYZ</span></button>
-        <div class="key-empty"></div>
-        <button class="key-btn" data-val="0">0</button>
-        <button class="key-btn key-del"><i class="fa-solid fa-delete-left"></i></button>
+        <div class="pin-keypad" id="pinKeypadConfirm">
+          <button class="key-btn" data-val="1">1</button>
+          <button class="key-btn" data-val="2">2<span class="key-sub">ABC</span></button>
+          <button class="key-btn" data-val="3">3<span class="key-sub">DEF</span></button>
+          <button class="key-btn" data-val="4">4<span class="key-sub">GHI</span></button>
+          <button class="key-btn" data-val="5">5<span class="key-sub">JKL</span></button>
+          <button class="key-btn" data-val="6">6<span class="key-sub">MNO</span></button>
+          <button class="key-btn" data-val="7">7<span class="key-sub">PQRS</span></button>
+          <button class="key-btn" data-val="8">8<span class="key-sub">TUV</span></button>
+          <button class="key-btn" data-val="9">9<span class="key-sub">WXYZ</span></button>
+          <div class="key-empty"></div>
+          <button class="key-btn" data-val="0">0</button>
+          <button class="key-btn key-del"><i class="fa-solid fa-delete-left"></i></button>
+        </div>
       </div>
     </div>
 
     <!-- STEP 3: SUCCESS -->
     <div class="pin-step" id="pinStepSuccess">
-      <div class="pin-step-body pin-step-center">
-        <div class="pin-illustration success pin-illustration-ring">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <path d="M32 4 L54 12 V30 C54 46 45 56 32 60 C19 56 10 46 10 30 V12 Z" fill="#2e7d32" />
-            <path d="M32 4 L54 12 V30 C54 46 45 56 32 60 Z" fill="#43a047" />
-            <path d="M20 32 L29 41 L45 24" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+      <div class="pin-step-scroll">
+        <div class="pin-step-body pin-step-center">
+          <div class="pin-illustration success pin-illustration-ring">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 4 L54 12 V30 C54 46 45 56 32 60 C19 56 10 46 10 30 V12 Z" fill="#2e7d32" />
+              <path d="M32 4 L54 12 V30 C54 46 45 56 32 60 Z" fill="#43a047" />
+              <path d="M20 32 L29 41 L45 24" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <h2 class="pin-step-heading">PIN Created!</h2>
+          <p class="pin-step-sub">You can now use this PIN to authorize withdrawals and sign in faster next time.</p>
         </div>
-        <h2 class="pin-step-heading">PIN Created!</h2>
-        <p class="pin-step-sub">You can now use this PIN to authorize withdrawals and sign in faster next time.</p>
       </div>
       <button class="pin-step-btn" id="pinSetupDone">Done</button>
     </div>
