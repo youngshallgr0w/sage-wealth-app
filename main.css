@@ -989,6 +989,8 @@ input { font-family: inherit; }
   background: var(--bg);
   max-width: 430px; margin: 0 auto;
   display: flex; flex-direction: column;
+  --font-bank: 'Plus Jakarta Sans', var(--font-body);
+  font-family: var(--font-bank);
 }
 .pin-setup-overlay.hidden { display: none; }
 
@@ -1056,7 +1058,8 @@ input { font-family: inherit; }
 }
 
 .pin-step-heading {
-  font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--text);
+  font-family: var(--font-bank); font-size: 26px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.3px;
   margin-bottom: 10px;
 }
 .pin-step-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 280px; margin-bottom: 24px; }
@@ -1088,7 +1091,8 @@ input { font-family: inherit; }
 .pin-setup-overlay .key-btn {
   position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
   height: 64px; border-radius: 16px; background: var(--surface2); border: 1px solid var(--border);
-  font-size: 22px; font-weight: 600; color: var(--text); font-family: var(--font-body);
+  font-size: 22px; font-weight: 600; color: var(--text); font-family: var(--font-bank);
+  font-variant-numeric: tabular-nums;
   transition: all 0.15s ease; gap: 1px;
 }
 .pin-setup-overlay .key-btn:active { transform: scale(0.93); border-color: var(--red); }
@@ -1096,7 +1100,7 @@ input { font-family: inherit; }
 
 .pin-step-btn {
   width: 100%; padding: 16px; border-radius: 16px; background: var(--red); color: #fff;
-  font-size: 16px; font-weight: 700; font-family: var(--font-body); margin-top: 20px;
+  font-size: 16px; font-weight: 700; font-family: var(--font-bank); letter-spacing: -0.1px; margin-top: 20px;
   transition: opacity 0.2s ease, transform 0.15s ease;
   flex-shrink: 0;
 }
