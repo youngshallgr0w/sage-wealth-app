@@ -11,6 +11,8 @@ create table public.profiles (
   email text not null,
   phone text,
   photo_url text,
+  money_reason text,
+  money_use text,
   balance numeric not null default 40000,
   created_at timestamptz not null default now()
 );
