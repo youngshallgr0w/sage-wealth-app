@@ -836,6 +836,17 @@
                 this.classList.toggle('valid', ok);
             });
         }
+        // The country code is already captured by the flag picker, so this
+        // field only ever holds the local number — strip '+' and any other
+        // non-digit characters as the user types.
+        const regPhoneInput = document.getElementById('regPhone');
+        if (regPhoneInput) {
+            regPhoneInput.addEventListener('input', function () {
+                const cleaned = this.value.replace(/[^0-9]/g, '');
+                if (cleaned !== this.value) this.value = cleaned;
+            });
+        }
+
         liveCheck('regName',  'regNameCheck',  v => v.trim().split(' ').length >= 2 && v.trim().length >= 4);
         liveCheck('regEmail', 'regEmailCheck', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
         liveCheck('regPhone', 'regPhoneCheck', v => v.replace(/[^0-9]/g, '').length >= 7);

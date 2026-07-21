@@ -83,6 +83,7 @@
       setTimeout(() => {
         if (confirmEntry === pendingPin) {
           localStorage.setItem('sw_user_pin', pendingPin);
+          localStorage.setItem('sw_pin_setup_done', '1');
           if (window.sw && typeof window.sw.updateProfilePin === 'function') {
             window.sw.updateProfilePin(pendingPin).catch(() => {});
           }
@@ -133,7 +134,7 @@
 
   // Called by app.js once the dashboard is visible.
   window.maybeShowPinSetup = function () {
-    if (localStorage.getItem('sw_user_pin')) return;
+    if (localStorage.getItem('sw_pin_setup_done')) return;
     setTimeout(() => {
       overlay.classList.remove('hidden');
     }, 3000);

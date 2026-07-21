@@ -103,13 +103,18 @@ document.addEventListener('sw:ready', async (e) => {
   if (avatarImg) avatarImg.src = profile.photoURL;
   if (usernameEl) usernameEl.textContent = profile.name;
 
-  // Keep the withdrawal PIN in sync between this device and Supabase —
-  // pull down the DB value if one exists, otherwise push up whatever is
-  // already stored locally (or the default) so old accounts backfill it.
-  if (profile.pin) {
+  // Keep the withdrawal PIN in sync between this device and Supabase.
+  // This device's localStorage is authoritative if it already has a PIN
+  // (never overwrite a real chosen PIN with a stale/default DB value) —
+  // push it up instead. Only adopt the DB's value on a fresh device that
+  // has never set one locally.
+  const localPin = localStorage.getItem('sw_user_pin');
+  if (localPin) {
+    if (profile.pin !== localPin && window.sw && typeof window.sw.updateProfilePin === 'function') {
+      window.sw.updateProfilePin(localPin).catch(() => {});
+    }
+  } else if (profile.pin) {
     localStorage.setItem('sw_user_pin', profile.pin);
-  } else if (window.sw && typeof window.sw.updateProfilePin === 'function') {
-    window.sw.updateProfilePin(localStorage.getItem('sw_user_pin') || '1467').catch(() => {});
   }
 
   setTimeout(() => {

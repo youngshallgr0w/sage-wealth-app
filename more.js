@@ -189,6 +189,7 @@ function initPinChange() {
     }
 
     localStorage.setItem('sw_user_pin', newP.value);
+    localStorage.setItem('sw_pin_setup_done', '1');
     if (window.sw && typeof window.sw.updateProfilePin === 'function') {
       window.sw.updateProfilePin(newP.value).catch(() => {});
     }
