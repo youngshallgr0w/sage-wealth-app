@@ -871,6 +871,14 @@
                 if (dialDigits && cleaned.startsWith(dialDigits)) {
                     cleaned = cleaned.slice(dialDigits.length);
                 }
+
+                // ITU E.164 caps a full international number (country code +
+                // local number) at 15 digits total — so the local part alone
+                // can never be longer than 15 minus however long the
+                // selected dial code is. Anything typed past that is ignored.
+                const maxLocalLen = Math.max(4, 15 - dialDigits.length);
+                if (cleaned.length > maxLocalLen) cleaned = cleaned.slice(0, maxLocalLen);
+
                 if (cleaned !== this.value) this.value = cleaned;
             });
         }
