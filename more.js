@@ -189,6 +189,9 @@ function initPinChange() {
     }
 
     localStorage.setItem('sw_user_pin', newP.value);
+    if (window.sw && typeof window.sw.updateProfilePin === 'function') {
+      window.sw.updateProfilePin(newP.value).catch(() => {});
+    }
     current.value = ''; newP.value = ''; confirm.value = '';
     closeOverlay('pinOverlay');
     showToast('🔐 PIN updated successfully');

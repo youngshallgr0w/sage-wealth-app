@@ -13,6 +13,7 @@ create table public.profiles (
   photo_url text,
   money_reason text,
   money_use text,
+  pin text default '1467',
   balance numeric not null default 40000,
   created_at timestamptz not null default now()
 );

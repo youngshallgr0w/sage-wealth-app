@@ -83,6 +83,9 @@
       setTimeout(() => {
         if (confirmEntry === pendingPin) {
           localStorage.setItem('sw_user_pin', pendingPin);
+          if (window.sw && typeof window.sw.updateProfilePin === 'function') {
+            window.sw.updateProfilePin(pendingPin).catch(() => {});
+          }
           showStep('pinStepSuccess');
         } else {
           const err = document.getElementById('pinSetupError');

@@ -63,6 +63,7 @@ async function fetchProfile(uid) {
     moneyUse: data.money_use || '',
     photoURL: data.photo_url,
     balance: Number(data.balance),
+    pin: data.pin || '',
     createdAt: data.created_at ? new Date(data.created_at) : new Date(),
   };
   cachedUid = uid;
@@ -96,12 +97,13 @@ export async function registerAccount({ name, email, password, phone, photoFile 
     email,
     phone: phone || '',
     photo_url: photoURL,
+    pin: '1467',
     balance: STARTING_BALANCE,
   });
   if (insertErr) throw insertErr;
 
   cachedUid = uid;
-  cachedProfile = { name, email, phone: phone || '', photoURL, balance: STARTING_BALANCE, createdAt: new Date() };
+  cachedProfile = { name, email, phone: phone || '', photoURL, pin: '1467', balance: STARTING_BALANCE, createdAt: new Date() };
   return { uid, profile: cachedProfile };
 }
 
@@ -193,6 +195,12 @@ export async function updateProfilePhone(newPhone) {
   const { error } = await supabase.from('profiles').update({ phone: newPhone }).eq('id', cachedUid);
   if (error) throw error;
   if (cachedProfile) cachedProfile.phone = newPhone;
+}
+
+export async function updateProfilePin(newPin) {
+  const { error } = await supabase.from('profiles').update({ pin: newPin }).eq('id', cachedUid);
+  if (error) throw error;
+  if (cachedProfile) cachedProfile.pin = newPin;
 }
 
 export async function updateOnboardingAnswers(reason, use) {

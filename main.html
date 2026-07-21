@@ -421,8 +421,8 @@
   </div>
 
   <script type="module">
-    import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount } from './session.js';
-    window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, logoutAccount };
+    import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, updateProfilePin, logoutAccount } from './session.js';
+    window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, updateProfilePin, logoutAccount };
     requireSession().then(({ uid, profile }) => {
       window.sw.uid = uid;
       window.sw.profile = profile;
