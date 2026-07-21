@@ -838,15 +838,36 @@
         }
         // The country code is already captured by the flag picker, so this
         // field only ever holds the local number — strip '+', any other
-        // non-digit characters, and a re-typed copy of the selected dial
-        // code as the user types (e.g. picking Nigeria +234 then typing
-        // "234..." would otherwise duplicate the code already shown).
+        // non-digit characters, and a re-typed copy of the dial code.
+        // If what's typed starts with a DIFFERENT country's code than the
+        // one currently selected (e.g. the picker is still on default +1
+        // but the user just types "234..." without ever opening it), the
+        // picker auto-switches to match instead of leaving it stuck.
         const regPhoneInput = document.getElementById('regPhone');
         if (regPhoneInput) {
             regPhoneInput.addEventListener('input', function () {
                 let cleaned = this.value.replace(/[^0-9]/g, '');
                 const dialCodeEl = document.getElementById('regCountryDialCode');
-                const dialDigits = dialCodeEl ? dialCodeEl.value.replace(/[^0-9]/g, '') : '';
+                const flagEl = document.getElementById('regCountryFlag');
+                const codeEl = document.getElementById('regCountryCode');
+                let dialDigits = dialCodeEl ? dialCodeEl.value.replace(/[^0-9]/g, '') : '';
+
+                if (!(dialDigits && cleaned.startsWith(dialDigits))) {
+                    const match = COUNTRIES
+                        .filter(([iso2, code]) => {
+                            const codeDigits = code.replace(/[^0-9]/g, '');
+                            return codeDigits.length >= 2 && cleaned.startsWith(codeDigits);
+                        })
+                        .sort((a, b) => b[1].length - a[1].length)[0];
+                    if (match) {
+                        const [iso2, code] = match;
+                        if (flagEl) flagEl.src = flagUrl(iso2);
+                        if (codeEl) codeEl.textContent = code;
+                        if (dialCodeEl) dialCodeEl.value = code;
+                        dialDigits = code.replace(/[^0-9]/g, '');
+                    }
+                }
+
                 if (dialDigits && cleaned.startsWith(dialDigits)) {
                     cleaned = cleaned.slice(dialDigits.length);
                 }
