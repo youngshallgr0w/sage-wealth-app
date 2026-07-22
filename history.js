@@ -52,7 +52,7 @@ async function getUserTx() {
         meta:   'Sent to wallet · ' + net,
         amount: '-' + formatCurrency(n.amount || 0),
         sign:   'negative',
-        status: 'pending',
+        status: n.status || 'pending',
         date:   n.time ? n.time.split(' ')[0] : new Date().toISOString().split('T')[0],
         time:   n.time ? (n.time.split(' ')[1] || '00:00:00') : '00:00:00',
       };
@@ -64,7 +64,7 @@ async function getUserTx() {
       meta:   'Bitcoin (BTC)',
       amount: '+' + formatCurrency(n.amount || 0),
       sign:   'positive',
-      status: 'success',
+      status: n.status || 'success',
       date:   n.time ? n.time.split(' ')[0] : new Date().toISOString().split('T')[0],
       time:   n.time ? (n.time.split(' ')[1] || '00:00:00') : '00:00:00',
     };
@@ -122,16 +122,18 @@ function amountClass(sign) {
 }
 
 function statusClass(status) {
-  if (status === 'success') return 'tx-status--success';
-  if (status === 'pending') return 'tx-status--pending';
-  if (status === 'failed')  return 'tx-status--failed';
+  if (status === 'success')    return 'tx-status--success';
+  if (status === 'processing') return 'tx-status--pending';
+  if (status === 'pending')    return 'tx-status--pending';
+  if (status === 'failed')     return 'tx-status--failed';
   return 'tx-status--success';
 }
 
 function statusLabel(status) {
-  if (status === 'success') return 'Success';
-  if (status === 'pending') return 'Pending';
-  if (status === 'failed')  return 'Failed';
+  if (status === 'success')    return 'Success';
+  if (status === 'processing') return 'Processing';
+  if (status === 'pending')    return 'Pending';
+  if (status === 'failed')     return 'Failed';
   return 'Success';
 }
 

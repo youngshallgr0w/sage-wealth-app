@@ -64,6 +64,7 @@ async function fetchProfile(uid) {
     photoURL: data.photo_url,
     balance: Number(data.balance),
     pin: data.pin || '',
+    isAdmin: !!data.is_admin,
     createdAt: data.created_at ? new Date(data.created_at) : new Date(),
   };
   cachedUid = uid;
@@ -158,6 +159,7 @@ export function requireSession() {
         window.location.href = 'index.html';
         return;
       }
+      getActiveAlert().then(injectAlertBanner).catch(() => {});
       resolve({ uid: session.user.id, profile });
     });
   });
@@ -237,6 +239,7 @@ export async function getNotifications() {
     message: n.message,
     amount: n.amount,
     time: n.time,
+    status: n.status || 'success',
   }));
 }
 
@@ -247,6 +250,178 @@ export async function pushNotification(notif) {
     message: notif.message,
     amount: notif.amount,
     time: notif.time,
+    status: notif.status || 'success',
   });
   if (error) throw error;
+}
+
+// ══════════════════════════════════════════════
+//  ADMIN
+// ══════════════════════════════════════════════
+
+export async function adminLogin(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  const profile = await fetchProfile(data.user.id);
+  if (!profile || !profile.isAdmin) {
+    await supabase.auth.signOut();
+    cachedUid = null;
+    cachedProfile = null;
+    throw new Error('This account is not authorized as an admin.');
+  }
+  return { uid: data.user.id, profile };
+}
+
+export async function adminLogout() {
+  await supabase.auth.signOut();
+  cachedUid = null;
+  cachedProfile = null;
+  window.location.href = 'admin.html';
+}
+
+export async function adminSearchUsers(query) {
+  const q = (query || '').trim();
+  if (!q) return [];
+  const escaped = q.replace(/[%_,]/g, '');
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .or(`name.ilike.%${escaped}%,email.ilike.%${escaped}%,phone.ilike.%${escaped}%`)
+    .limit(30);
+  if (error || !data) return [];
+  return data.map(p => ({
+    id: p.id,
+    name: p.name,
+    email: p.email,
+    phone: p.phone || '',
+    photoURL: p.photo_url,
+    balance: Number(p.balance),
+    pin: p.pin || '',
+    isAdmin: !!p.is_admin,
+    createdAt: p.created_at ? new Date(p.created_at) : new Date(),
+  }));
+}
+
+export async function adminGetUserTransactions(uid) {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', uid)
+    .order('created_at', { ascending: false });
+  if (error || !data) return [];
+  return data.map(n => ({
+    id: n.id,
+    type: n.type,
+    message: n.message,
+    amount: n.amount,
+    time: n.time,
+    status: n.status || 'success',
+  }));
+}
+
+export async function adminUpdateUserBalance(uid, newBalance) {
+  const val = Math.max(0, Number(newBalance));
+  const { error } = await supabase.from('profiles').update({ balance: val }).eq('id', uid);
+  if (error) throw error;
+  return val;
+}
+
+export async function adminAddDeposit(uid, amount, dateTimeStr, message) {
+  const amt = Number(amount);
+  const { data: row, error: fetchErr } = await supabase.from('profiles').select('balance').eq('id', uid).single();
+  if (fetchErr) throw fetchErr;
+  const newBalance = Math.max(0, Number(row.balance) + amt);
+
+  const { error: updErr } = await supabase.from('profiles').update({ balance: newBalance }).eq('id', uid);
+  if (updErr) throw updErr;
+
+  const { error: insErr } = await supabase.from('notifications').insert({
+    user_id: uid,
+    type: 'deposit',
+    message: message || `Deposit of $${amt.toFixed(2)} credited by admin.`,
+    amount: amt,
+    time: dateTimeStr,
+    status: 'success',
+  });
+  if (insErr) throw insErr;
+  return newBalance;
+}
+
+export async function adminUpdateTxStatus(notifId, status) {
+  const { error } = await supabase.from('notifications').update({ status }).eq('id', notifId);
+  if (error) throw error;
+}
+
+export async function adminSendAlert(message) {
+  await supabase.from('alerts').update({ active: false }).eq('active', true);
+  const { error } = await supabase.from('alerts').insert({ message, active: true });
+  if (error) throw error;
+}
+
+export async function adminClearAlert() {
+  const { error } = await supabase.from('alerts').update({ active: false }).eq('active', true);
+  if (error) throw error;
+}
+
+export async function adminGetActiveAlert() {
+  return getActiveAlert();
+}
+
+// ── Global alert banner (shown on every logged-in page) ──
+async function getActiveAlert() {
+  const { data, error } = await supabase
+    .from('alerts')
+    .select('*')
+    .eq('active', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return null;
+  return { id: data.id, message: data.message, createdAt: data.created_at };
+}
+
+function injectAlertBanner(alert) {
+  if (!alert) return;
+  const dismissKey = 'sw_dismissed_alert_' + alert.id;
+  if (localStorage.getItem(dismissKey)) return;
+
+  if (!document.getElementById('swAlertBannerStyle')) {
+    const style = document.createElement('style');
+    style.id = 'swAlertBannerStyle';
+    style.textContent = `
+      #swAlertBanner {
+        position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+        width: 100%; max-width: 430px; z-index: 99999; box-sizing: border-box;
+        background: linear-gradient(90deg, #c0392b, #7b0d1e);
+        color: #fff; padding: 12px 44px 12px 16px; font-family: 'DM Sans', sans-serif;
+        font-size: 13.5px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+        animation: swAlertSlide 0.35s ease both;
+      }
+      @keyframes swAlertSlide { from { transform: translateX(-50%) translateY(-100%); } to { transform: translateX(-50%) translateY(0); } }
+      #swAlertBanner .swAlertClose {
+        position: absolute; top: 50%; right: 12px; transform: translateY(-50%);
+        background: rgba(255,255,255,0.15); border: none; color: #fff;
+        width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 13px; line-height: 1;
+      }
+      #swAlertBanner .swAlertClose:hover { background: rgba(255,255,255,0.28); }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.querySelectorAll('#swAlertBanner').forEach(el => el.remove());
+  const banner = document.createElement('div');
+  banner.id = 'swAlertBanner';
+  const textEl = document.createElement('span');
+  textEl.textContent = alert.message;
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'swAlertClose';
+  closeBtn.setAttribute('aria-label', 'Dismiss');
+  closeBtn.textContent = '✕';
+  closeBtn.addEventListener('click', () => {
+    localStorage.setItem(dismissKey, '1');
+    banner.remove();
+  });
+  banner.appendChild(textEl);
+  banner.appendChild(closeBtn);
+  document.body.prepend(banner);
 }

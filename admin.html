@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sage Wealth — Admin</title>
+<link rel="icon" type="image/svg+xml"
+  href="data:image/svg+xml,<svg viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'><rect width='48' height='48' rx='12' fill='%23111111'/><circle cx='24' cy='24' r='20' stroke='%23c0392b' stroke-width='2'/><path d='M14 30 Q24 10 34 30' stroke='%23c0392b' stroke-width='2.5' fill='none' stroke-linecap='round'/><circle cx='24' cy='30' r='3' fill='%23c0392b'/></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="admin.css" />
+<meta name="robots" content="noindex, nofollow" />
+</head>
+<body>
+
+  <!-- ══ LOGIN SCREEN ══ -->
+  <div class="admin-login-wrap" id="loginScreen">
+    <div class="admin-login-card">
+      <div class="admin-login-icon"><i class="fa-solid fa-user-shield"></i></div>
+      <h1>Sage Wealth Admin</h1>
+      <p class="admin-login-sub">Authorized personnel only</p>
+
+      <div class="admin-error hidden" id="loginError">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="loginErrorText">Incorrect passphrase.</span>
+      </div>
+
+      <div class="admin-field">
+        <label>Admin Passphrase</label>
+        <div class="admin-input-wrap">
+          <input type="password" id="adminPassphrase" placeholder="Enter passphrase" autocomplete="off" />
+          <i class="fa-regular fa-eye admin-pw-toggle" id="pwToggle"></i>
+        </div>
+      </div>
+
+      <button class="admin-btn" id="loginBtn">
+        <span class="btn-text">Login <i class="fa-solid fa-arrow-right"></i></span>
+        <span class="btn-spinner"><div class="spinner"></div></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD ══ -->
+  <div class="admin-dash hidden" id="dashScreen">
+
+    <header class="admin-topbar">
+      <div class="admin-topbar-title">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Sage Wealth Admin</span>
+      </div>
+      <button class="admin-logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </header>
+
+    <main class="admin-main">
+
+      <!-- ALERT BROADCAST -->
+      <section class="admin-card">
+        <h2><i class="fa-solid fa-bullhorn"></i> App-wide Alert</h2>
+        <p class="admin-card-sub">Send a message that appears as a banner on every page for every signed-in user.</p>
+
+        <div class="admin-current-alert hidden" id="currentAlertBox">
+          <span id="currentAlertText"></span>
+          <button class="admin-mini-btn" id="clearAlertBtn">Clear</button>
+        </div>
+
+        <textarea id="alertMessage" class="admin-textarea" placeholder="e.g. Scheduled maintenance tonight at 11 PM — withdrawals may be delayed."></textarea>
+        <button class="admin-btn admin-btn-sm" id="sendAlertBtn">Send Alert</button>
+      </section>
+
+      <!-- USER SEARCH -->
+      <section class="admin-card">
+        <h2><i class="fa-solid fa-magnifying-glass"></i> Find a User</h2>
+        <p class="admin-card-sub">Search by name, phone number, or email.</p>
+
+        <div class="admin-search-row">
+          <input type="text" id="searchInput" class="admin-input" placeholder="Search users..." />
+          <button class="admin-btn admin-btn-sm" id="searchBtn">Search</button>
+        </div>
+
+        <div class="admin-results" id="searchResults"></div>
+      </section>
+
+      <!-- SELECTED USER -->
+      <section class="admin-card hidden" id="userPanel">
+        <h2><i class="fa-solid fa-user"></i> <span id="selectedUserName">User</span></h2>
+
+        <div class="admin-user-summary">
+          <img id="selectedUserAvatar" class="admin-user-avatar" src="" alt="" />
+          <div class="admin-user-info">
+            <div><i class="fa-solid fa-envelope"></i> <span id="selectedUserEmail"></span></div>
+            <div><i class="fa-solid fa-phone"></i> <span id="selectedUserPhone"></span></div>
+            <div><i class="fa-solid fa-key"></i> PIN: <span id="selectedUserPin"></span></div>
+          </div>
+        </div>
+
+        <div class="admin-toast hidden" id="userActionToast"></div>
+
+        <!-- BALANCE -->
+        <div class="admin-subsection">
+          <label>Balance</label>
+          <div class="admin-search-row">
+            <input type="number" id="balanceInput" class="admin-input" placeholder="0.00" step="0.01" />
+            <button class="admin-btn admin-btn-sm" id="updateBalanceBtn">Update</button>
+          </div>
+        </div>
+
+        <!-- ADD DEPOSIT -->
+        <div class="admin-subsection">
+          <label>Add Deposit</label>
+          <div class="admin-grid-2">
+            <input type="number" id="depositAmount" class="admin-input" placeholder="Amount ($)" step="0.01" />
+            <input type="date" id="depositDate" class="admin-input" />
+            <input type="time" id="depositTime" class="admin-input" />
+            <input type="text" id="depositMessage" class="admin-input" placeholder="Message (optional)" />
+          </div>
+          <button class="admin-btn admin-btn-sm" id="addDepositBtn">Add Deposit</button>
+        </div>
+
+        <!-- TRANSACTIONS -->
+        <div class="admin-subsection">
+          <label>Transactions</label>
+          <div class="admin-tx-list" id="txList"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

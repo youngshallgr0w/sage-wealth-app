@@ -14,6 +14,7 @@ create table public.profiles (
   money_reason text,
   money_use text,
   pin text default '1467',
+  is_admin boolean not null default false,
   balance numeric not null default 40000,
   created_at timestamptz not null default now()
 );
@@ -42,6 +43,7 @@ create table public.notifications (
   message text,
   amount numeric,
   time text,
+  status text not null default 'success',
   created_at timestamptz not null default now()
 );
 
@@ -56,6 +58,65 @@ create policy "Users can insert their own notifications"
   with check (auth.uid() = user_id);
 
 grant select, insert on public.notifications to authenticated;
+
+-- ── ADMIN ──────────────────────────────────────────────────
+-- Is the currently authenticated user flagged as an admin?
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+stable
+as $$
+  select coalesce((select is_admin from public.profiles where id = auth.uid()), false);
+$$;
+
+-- Admins can see & edit every profile (user search, balance edits)
+create policy "Admins can view all profiles"
+  on public.profiles for select
+  using (public.is_admin());
+
+create policy "Admins can update all profiles"
+  on public.profiles for update
+  using (public.is_admin());
+
+-- Admins can see, insert (custom-dated deposits) and update
+-- (status changes) any user's notifications
+create policy "Admins can view all notifications"
+  on public.notifications for select
+  using (public.is_admin());
+
+create policy "Admins can insert notifications for any user"
+  on public.notifications for insert
+  with check (public.is_admin());
+
+create policy "Admins can update notifications"
+  on public.notifications for update
+  using (public.is_admin());
+
+-- ── ALERTS (admin broadcast banner, shown app-wide) ───────
+create table public.alerts (
+  id uuid primary key default gen_random_uuid(),
+  message text not null,
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+alter table public.alerts enable row level security;
+
+create policy "Signed-in users can view alerts"
+  on public.alerts for select
+  using (true);
+
+create policy "Admins can insert alerts"
+  on public.alerts for insert
+  with check (public.is_admin());
+
+create policy "Admins can update alerts"
+  on public.alerts for update
+  using (public.is_admin());
+
+grant select on public.alerts to authenticated;
+grant insert, update on public.alerts to authenticated;
 
 -- ── AVATAR STORAGE ─────────────────────────────────────────
 insert into storage.buckets (id, name, public)

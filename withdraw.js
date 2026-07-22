@@ -24,6 +24,7 @@ async function queueWithdrawNotif(amount, net, time) {
     message: 'Withdrawal of ' + amount + ' ' + net + ' submitted. Pending transfer to wallet.',
     amount:  parseFloat(amount),
     time:    time,
+    status:  'pending',
   });
 }
 
