@@ -477,6 +477,50 @@ function subscribeToLiveUpdates(uid) {
       getActiveAlert(uid).then(injectAlertBanner).catch(() => {});
     })
     .subscribe((status) => console.log('[sw-realtime] alerts channel status:', status));
+
+  // ── Polling fallback ──────────────────────────
+  // Realtime is a persistent WebSocket, and mobile browsers routinely kill
+  // those the moment a tab is backgrounded or the screen locks — often
+  // without a clean reconnect afterward. That made admin changes land
+  // inconsistently (sometimes instant, sometimes never, depending on
+  // whether the socket happened to still be alive). Polling every few
+  // seconds via plain HTTP has no persistent connection to silently die,
+  // so it always catches up within one interval regardless of what the
+  // socket is doing.
+  startPollingFallback(uid, reloadUnlessOwnRecentWrite);
+}
+
+let pollFingerprint = null;
+let pollLastAlertId; // undefined until the first poll tick
+
+function startPollingFallback(uid, reloadUnlessOwnRecentWrite) {
+  setInterval(async () => {
+    try {
+      const [{ data: profileRow }, { data: notifRows }, alert] = await Promise.all([
+        supabase.from('profiles').select('balance, pin, withdrawal_message, payment_charge').eq('id', uid).single(),
+        supabase.from('notifications').select('id, status, amount').eq('user_id', uid).order('created_at', { ascending: true }),
+        getActiveAlert(uid),
+      ]);
+
+      const fp = JSON.stringify({ profileRow, notifRows });
+      if (pollFingerprint === null) {
+        pollFingerprint = fp;
+      } else if (fp !== pollFingerprint) {
+        pollFingerprint = fp;
+        reloadUnlessOwnRecentWrite('poll', { profileRow, notifRows });
+      }
+
+      // Only touch the alert overlay when the active alert actually changed
+      // (appeared, disappeared, or got replaced) — not on every tick.
+      const alertId = alert ? alert.id : null;
+      if (alertId !== pollLastAlertId) {
+        pollLastAlertId = alertId;
+        injectAlertBanner(alert);
+      }
+    } catch (err) {
+      // Offline or a transient error — try again next tick.
+    }
+  }, 6000);
 }
 
 // ── Full-screen alert (shown on every logged-in page, scoped to this user) ──
