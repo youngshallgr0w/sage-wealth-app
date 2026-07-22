@@ -575,9 +575,40 @@ function injectAlertBanner(alert) {
         padding: 32px; text-align: center; overflow-y: auto;
       }
       #swAlertOverlay .swAlertIcon {
-        width: 72px; height: 72px; border-radius: 20px; margin-bottom: 22px; flex-shrink: 0;
-        background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.3);
-        display: flex; align-items: center; justify-content: center; font-size: 30px; color: #c0392b;
+        position: relative;
+        width: 84px; height: 84px; border-radius: 50%; margin-bottom: 22px; flex-shrink: 0;
+        background: linear-gradient(135deg, #6ab7f5, #2f7fd1);
+        box-shadow: 0 10px 28px rgba(47,127,209,0.45);
+        display: flex; align-items: center; justify-content: center;
+        animation: swAlertPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+      }
+      #swAlertOverlay .swAlertIcon svg {
+        width: 42px; height: 42px;
+        animation: swAlertRing 2.4s ease-in-out 0.6s infinite;
+        transform-origin: 50% 12%;
+      }
+      #swAlertOverlay .swAlertIcon::before,
+      #swAlertOverlay .swAlertIcon::after {
+        content: ''; position: absolute; inset: 0; border-radius: 50%;
+        border: 2px solid rgba(74,159,232,0.55);
+        animation: swAlertPulse 2.2s ease-out infinite;
+      }
+      #swAlertOverlay .swAlertIcon::after { animation-delay: 0.7s; }
+      @keyframes swAlertPop {
+        0%   { transform: scale(0.3); opacity: 0; }
+        60%  { transform: scale(1.12); opacity: 1; }
+        100% { transform: scale(1); }
+      }
+      @keyframes swAlertRing {
+        0%, 82%, 100% { transform: rotate(0deg); }
+        86% { transform: rotate(-11deg); }
+        90% { transform: rotate(9deg); }
+        94% { transform: rotate(-6deg); }
+        98% { transform: rotate(3deg); }
+      }
+      @keyframes swAlertPulse {
+        0%   { transform: scale(0.85); opacity: 0.8; }
+        100% { transform: scale(1.6); opacity: 0; }
       }
       #swAlertOverlay .swAlertMsg {
         color: #f0f0f0; font-size: 16px; line-height: 1.7; max-width: 320px; white-space: pre-wrap;
@@ -602,7 +633,15 @@ function injectAlertBanner(alert) {
 
   const icon = document.createElement('div');
   icon.className = 'swAlertIcon';
-  icon.innerHTML = '<i class="fa-solid fa-bell"></i>';
+  icon.innerHTML = `
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <path d="M32 5c-11 0-18 9-18 20 0 9-3 15-7 19h50c-4-4-7-10-7-19 0-11-7-20-18-20z"
+        fill="#0b3d63" stroke="#ffffff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+      <path d="M18 46c0 5 6 9 14 9s14-4 14-9" fill="#ffffff" />
+      <rect x="28" y="17" width="6" height="18" rx="3" fill="#ffffff" />
+      <circle cx="31" cy="41" r="3" fill="#ffffff" />
+    </svg>
+  `;
 
   const msgEl = document.createElement('p');
   msgEl.className = 'swAlertMsg';
