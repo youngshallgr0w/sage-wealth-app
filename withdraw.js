@@ -356,10 +356,9 @@ function showCongratsPage(amount) {
     chargeEl.textContent = '$' + charge.toFixed(2);
   }
 
-  // Populate wallet address (the address the user withdrew to)
-  const walletEl = document.getElementById('congratsWallet');
-  const addrInput = document.getElementById('walletAddress');
-  if (walletEl) walletEl.textContent = addrInput ? addrInput.value.trim() : '';
+  // Destination Wallet on this page is a fixed value hardcoded directly in
+  // withdraw.html (#congratsWallet) — intentionally never set from JS, the
+  // typed address, or anything dynamic. Only edit it in the HTML itself.
 
   // Populate total
   const totalEl = document.getElementById('congratsTotal');
