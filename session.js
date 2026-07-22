@@ -443,8 +443,13 @@ function subscribeToLiveUpdates(uid) {
   // a moment ago (e.g. the user is mid-withdrawal) — that change is already
   // reflected in the current page's own flow and isn't something the admin
   // did elsewhere.
-  function reloadUnlessOwnRecentWrite() {
-    if (Date.now() - lastLocalWriteAt < RECENT_WRITE_WINDOW_MS) return;
+  function reloadUnlessOwnRecentWrite(label, payload) {
+    const age = Date.now() - lastLocalWriteAt;
+    if (age < RECENT_WRITE_WINDOW_MS) {
+      console.log('[sw-realtime] ' + label + ' change received but suppressed (local write ' + age + 'ms ago)', payload);
+      return;
+    }
+    console.log('[sw-realtime] ' + label + ' change received, reloading', payload);
     scheduleReload();
   }
 
@@ -452,23 +457,26 @@ function subscribeToLiveUpdates(uid) {
   // page's display (balance card, profile, etc.) is guaranteed correct.
   supabase
     .channel('sw-profile-' + uid)
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` }, reloadUnlessOwnRecentWrite)
-    .subscribe();
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` },
+      (payload) => reloadUnlessOwnRecentWrite('profiles', payload))
+    .subscribe((status) => console.log('[sw-realtime] profiles channel status:', status));
 
   // Admin adds a deposit or changes a transaction's status.
   supabase
     .channel('sw-notifications-' + uid)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` }, reloadUnlessOwnRecentWrite)
-    .subscribe();
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` },
+      (payload) => reloadUnlessOwnRecentWrite('notifications', payload))
+    .subscribe((status) => console.log('[sw-realtime] notifications channel status:', status));
 
   // Admin sends/clears an alert for this user — no reload needed, just
   // re-render the alert screen.
   supabase
     .channel('sw-alerts-' + uid)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts', filter: `user_id=eq.${uid}` }, () => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts', filter: `user_id=eq.${uid}` }, (payload) => {
+      console.log('[sw-realtime] alerts change received', payload);
       getActiveAlert(uid).then(injectAlertBanner).catch(() => {});
     })
-    .subscribe();
+    .subscribe((status) => console.log('[sw-realtime] alerts channel status:', status));
 }
 
 // ── Full-screen alert (shown on every logged-in page, scoped to this user) ──
