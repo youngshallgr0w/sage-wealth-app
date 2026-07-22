@@ -131,9 +131,27 @@
             <input type="number" id="depositAmount" class="admin-input" placeholder="Amount ($)" step="0.01" />
             <input type="date" id="depositDate" class="admin-input" />
             <input type="time" id="depositTime" class="admin-input" />
-            <input type="text" id="depositMessage" class="admin-input" placeholder="Message (optional)" />
+            <input type="text" id="depositMessage" class="admin-input admin-span-2" placeholder="Message (optional)" />
           </div>
           <button class="admin-btn admin-btn-sm" id="addDepositBtn">Add Deposit</button>
+        </div>
+
+        <!-- ADD WITHDRAWAL -->
+        <div class="admin-subsection">
+          <label>Add Withdrawal</label>
+          <div class="admin-grid-2">
+            <input type="number" id="withdrawalAmount" class="admin-input" placeholder="Amount ($)" step="0.01" />
+            <input type="date" id="withdrawalDate" class="admin-input" />
+            <input type="time" id="withdrawalTime" class="admin-input" />
+            <select id="withdrawalStatus" class="admin-input">
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="success">Success</option>
+              <option value="failed">Failed</option>
+            </select>
+            <input type="text" id="withdrawalMessageForTx" class="admin-input admin-span-2" placeholder="Message (optional)" />
+          </div>
+          <button class="admin-btn admin-btn-sm" id="addWithdrawalBtn">Add Withdrawal</button>
         </div>
 
         <!-- TRANSACTIONS -->

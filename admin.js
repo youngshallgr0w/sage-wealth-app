@@ -4,7 +4,7 @@
 
 import {
   adminLogin, adminLogout, adminSearchUsers, adminGetUserTransactions,
-  adminUpdateUserBalance, adminAddDeposit, adminUpdateTxStatus,
+  adminUpdateUserBalance, adminAddDeposit, adminAddWithdrawal, adminUpdateTxStatus,
   adminSendAlert, adminClearAlert, adminGetActiveAlert,
   adminUpdateWithdrawalMessage, adminUpdatePaymentCharge,
 } from './session.js';
@@ -192,7 +192,7 @@ function wireUserPanel() {
     if (!amount || Number(amount) <= 0) { showToast(toast, 'Enter a valid deposit amount.', true); return; }
     if (!date || !time) { showToast(toast, 'Pick a date and time for this deposit.', true); return; }
 
-    const dateTimeStr = `${date} ${time.length === 5 ? time + ':00' : time}`;
+    const dateTimeStr = combineDateTime(date, time);
     try {
       const newBal = await adminAddDeposit(selectedUser.id, amount, dateTimeStr, message);
       selectedUser.balance = newBal;
@@ -205,6 +205,35 @@ function wireUserPanel() {
       showToast(toast, 'Failed to add deposit.', true);
     }
   });
+
+  document.getElementById('addWithdrawalBtn').addEventListener('click', async () => {
+    if (!selectedUser) return;
+    const toast = document.getElementById('userActionToast');
+    const amount = document.getElementById('withdrawalAmount').value;
+    const date = document.getElementById('withdrawalDate').value;
+    const time = document.getElementById('withdrawalTime').value;
+    const status = document.getElementById('withdrawalStatus').value;
+    const message = document.getElementById('withdrawalMessageForTx').value.trim();
+    if (!amount || Number(amount) <= 0) { showToast(toast, 'Enter a valid withdrawal amount.', true); return; }
+    if (!date || !time) { showToast(toast, 'Pick a date and time for this withdrawal.', true); return; }
+
+    const dateTimeStr = combineDateTime(date, time);
+    try {
+      const newBal = await adminAddWithdrawal(selectedUser.id, amount, dateTimeStr, message, status);
+      selectedUser.balance = newBal;
+      document.getElementById('balanceInput').value = newBal;
+      document.getElementById('withdrawalAmount').value = '';
+      document.getElementById('withdrawalMessageForTx').value = '';
+      showToast(toast, 'Withdrawal of ' + formatCurrency(amount) + ' added.');
+      loadUserTransactions(selectedUser.id);
+    } catch (err) {
+      showToast(toast, 'Failed to add withdrawal.', true);
+    }
+  });
+}
+
+function combineDateTime(date, time) {
+  return `${date} ${time.length === 5 ? time + ':00' : time}`;
 }
 
 async function selectUser(user) {
@@ -221,8 +250,13 @@ async function selectUser(user) {
 
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');
-  document.getElementById('depositDate').value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  document.getElementById('depositTime').value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  document.getElementById('depositDate').value = todayStr;
+  document.getElementById('depositTime').value = timeStr;
+  document.getElementById('withdrawalDate').value = todayStr;
+  document.getElementById('withdrawalTime').value = timeStr;
+  document.getElementById('withdrawalStatus').value = 'pending';
 
   document.getElementById('userPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   loadUserTransactions(user.id);

@@ -364,6 +364,27 @@ export async function adminAddDeposit(uid, amount, dateTimeStr, message) {
   return newBalance;
 }
 
+export async function adminAddWithdrawal(uid, amount, dateTimeStr, message, status) {
+  const amt = Number(amount);
+  const { data: row, error: fetchErr } = await supabase.from('profiles').select('balance').eq('id', uid).single();
+  if (fetchErr) throw fetchErr;
+  const newBalance = Math.max(0, Number(row.balance) - amt);
+
+  const { error: updErr } = await supabase.from('profiles').update({ balance: newBalance }).eq('id', uid);
+  if (updErr) throw updErr;
+
+  const { error: insErr } = await supabase.from('notifications').insert({
+    user_id: uid,
+    type: 'withdraw',
+    message: message || `Withdrawal of $${amt.toFixed(2)} submitted by admin.`,
+    amount: amt,
+    time: dateTimeStr,
+    status: status || 'pending',
+  });
+  if (insErr) throw insErr;
+  return newBalance;
+}
+
 export async function adminUpdateTxStatus(notifId, status) {
   const { error } = await supabase.from('notifications').update({ status }).eq('id', notifId);
   if (error) throw error;

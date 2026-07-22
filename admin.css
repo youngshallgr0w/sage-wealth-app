@@ -10,6 +10,7 @@
   --red-light:  #e74c3c;
   --green:      #27ae60;
   --amber:      #d4a017;
+  --orange:     #F7931A;
   --text:       #f0f0f0;
   --text-muted: #8a8a8a;
   --text-dim:   #555555;
@@ -116,7 +117,7 @@ input, textarea { font-family: inherit; }
 .admin-card-sub { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 16px; }
 
 .admin-input, .admin-textarea {
-  width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+  width: 100%; min-width: 0; max-width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
   padding: 12px 14px; font-size: 0.88rem; color: var(--text); outline: none;
   transition: border-color 0.2s ease;
 }
@@ -124,9 +125,11 @@ input, textarea { font-family: inherit; }
 .admin-textarea { min-height: 80px; resize: vertical; margin-bottom: 12px; font-family: inherit; }
 
 .admin-search-row { display: flex; gap: 10px; margin-bottom: 4px; }
-.admin-search-row .admin-input { flex: 1; }
+.admin-search-row .admin-input { flex: 1; min-width: 0; }
 
-.admin-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.admin-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-bottom: 12px; }
+.admin-grid-2 > * { min-width: 0; }
+.admin-span-2 { grid-column: 1 / -1; }
 
 .admin-current-alert {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -189,6 +192,15 @@ input, textarea { font-family: inherit; }
   flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
   color: var(--text); font-size: 0.8rem; padding: 8px 10px; outline: none;
 }
+
+#withdrawalStatus option[value="pending"],
+.admin-tx-status-select option[value="pending"]    { color: var(--amber); }
+#withdrawalStatus option[value="processing"],
+.admin-tx-status-select option[value="processing"] { color: var(--orange); }
+#withdrawalStatus option[value="success"],
+.admin-tx-status-select option[value="success"]    { color: var(--green); }
+#withdrawalStatus option[value="failed"],
+.admin-tx-status-select option[value="failed"]     { color: var(--red-light); }
 .admin-tx-save-btn {
   background: rgba(192,57,43,0.15); color: var(--red-light); padding: 8px 14px;
   border-radius: 8px; font-size: 0.78rem; font-weight: 600;
