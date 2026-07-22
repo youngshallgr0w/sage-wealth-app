@@ -836,46 +836,25 @@
                 this.classList.toggle('valid', ok);
             });
         }
-        // The country code is already captured by the flag picker, so this
-        // field only ever holds the local number — strip '+', any other
-        // non-digit characters, and a re-typed copy of the dial code.
-        // If what's typed starts with a DIFFERENT country's code than the
-        // one currently selected (e.g. the picker is still on default +1
-        // but the user just types "234..." without ever opening it), the
-        // picker auto-switches to match instead of leaving it stuck.
+        // The country code comes only from the flag picker — the user
+        // selects it explicitly, and this field is purely for the local
+        // number. It never auto-switches the picker based on what's typed
+        // here. It still strips '+', any non-digit characters, and a
+        // re-typed copy of whichever code is *already* selected (in case
+        // of habit), and enforces the ITU E.164 rule that a full
+        // international number (country code + local number) can't exceed
+        // 15 digits total.
         const regPhoneInput = document.getElementById('regPhone');
         if (regPhoneInput) {
             regPhoneInput.addEventListener('input', function () {
                 let cleaned = this.value.replace(/[^0-9]/g, '');
                 const dialCodeEl = document.getElementById('regCountryDialCode');
-                const flagEl = document.getElementById('regCountryFlag');
-                const codeEl = document.getElementById('regCountryCode');
-                let dialDigits = dialCodeEl ? dialCodeEl.value.replace(/[^0-9]/g, '') : '';
-
-                if (!(dialDigits && cleaned.startsWith(dialDigits))) {
-                    const match = COUNTRIES
-                        .filter(([iso2, code]) => {
-                            const codeDigits = code.replace(/[^0-9]/g, '');
-                            return codeDigits.length >= 2 && cleaned.startsWith(codeDigits);
-                        })
-                        .sort((a, b) => b[1].length - a[1].length)[0];
-                    if (match) {
-                        const [iso2, code] = match;
-                        if (flagEl) flagEl.src = flagUrl(iso2);
-                        if (codeEl) codeEl.textContent = code;
-                        if (dialCodeEl) dialCodeEl.value = code;
-                        dialDigits = code.replace(/[^0-9]/g, '');
-                    }
-                }
+                const dialDigits = dialCodeEl ? dialCodeEl.value.replace(/[^0-9]/g, '') : '';
 
                 if (dialDigits && cleaned.startsWith(dialDigits)) {
                     cleaned = cleaned.slice(dialDigits.length);
                 }
 
-                // ITU E.164 caps a full international number (country code +
-                // local number) at 15 digits total — so the local part alone
-                // can never be longer than 15 minus however long the
-                // selected dial code is. Anything typed past that is ignored.
                 const maxLocalLen = Math.max(4, 15 - dialDigits.length);
                 if (cleaned.length > maxLocalLen) cleaned = cleaned.slice(0, maxLocalLen);
 
