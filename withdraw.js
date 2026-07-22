@@ -62,6 +62,17 @@ function initFormPage() {
   const balEl = document.getElementById('availBalDisplay');
   if (balEl) balEl.textContent = '$' + getBalance().toFixed(2);
 
+  // Browsers often restore a text input's previous value across a page
+  // reload (as opposed to a fresh navigation), rather than leaving it
+  // empty. Since this page can be reloaded automatically by the admin
+  // live-update system, force this field blank on every load so a
+  // leftover value from an earlier, abandoned attempt can never
+  // silently reappear as if it were freshly typed.
+  const addrEl = document.getElementById('walletAddress');
+  if (addrEl) addrEl.value = '';
+  const amtEl = document.getElementById('withdrawAmount');
+  if (amtEl) amtEl.value = '';
+
   document.querySelectorAll('.network-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       document.querySelectorAll('.network-pill').forEach(p => p.classList.remove('active'));
