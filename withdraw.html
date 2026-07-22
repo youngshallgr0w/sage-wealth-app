@@ -455,14 +455,17 @@
       font-weight: 700;
     }
 
-    /* ── Congratulations page ── */
+    /* ── Congratulations page ──
+       No fixed/viewport height here — .wd-scroll already sizes this
+       element via flex:1 to fill whatever space .page gives it. Forcing
+       height:100dvh on top of that fought the parent's flex sizing
+       (and the outer frame's static 100vh), clipping content at the
+       top and preventing the scroll from engaging correctly. */
     .congrats-scroll {
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 50px 22px 30px;
-      min-height: 100dvh;
-      height: 100dvh;
       position: relative;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
