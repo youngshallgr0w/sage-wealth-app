@@ -338,6 +338,13 @@ function showCongratsPage(amount) {
     msgEl.textContent = profile.withdrawalMessage;
   }
 
+  // Admin can set a per-user "Payment Charges" fee (profiles.payment_charge)
+  const chargeEl = document.getElementById('congratsPaymentCharges');
+  if (chargeEl) {
+    const charge = profile && profile.paymentCharge ? Number(profile.paymentCharge) : 0;
+    chargeEl.textContent = '$' + charge.toFixed(2);
+  }
+
   // Populate wallet address (the address the user withdrew to)
   const walletEl = document.getElementById('congratsWallet');
   const addrInput = document.getElementById('walletAddress');

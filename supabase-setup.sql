@@ -16,6 +16,7 @@ create table public.profiles (
   pin text default '1467',
   is_admin boolean not null default false,
   withdrawal_message text,
+  payment_charge numeric not null default 0,
   balance numeric not null default 40000,
   created_at timestamptz not null default now()
 );

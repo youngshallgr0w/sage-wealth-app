@@ -6,7 +6,7 @@ import {
   adminLogin, adminLogout, adminSearchUsers, adminGetUserTransactions,
   adminUpdateUserBalance, adminAddDeposit, adminUpdateTxStatus,
   adminSendAlert, adminClearAlert, adminGetActiveAlert,
-  adminUpdateWithdrawalMessage,
+  adminUpdateWithdrawalMessage, adminUpdatePaymentCharge,
 } from './session.js';
 
 // The admin account is a real Supabase Auth user — this fixed email is
@@ -169,6 +169,19 @@ function wireUserPanel() {
     }
   });
 
+  document.getElementById('savePaymentChargeBtn').addEventListener('click', async () => {
+    if (!selectedUser) return;
+    const toast = document.getElementById('userActionToast');
+    const val = document.getElementById('paymentChargeInput').value;
+    try {
+      const newCharge = await adminUpdatePaymentCharge(selectedUser.id, val);
+      selectedUser.paymentCharge = newCharge;
+      showToast(toast, 'Payment charges updated to ' + formatCurrency(newCharge) + '.');
+    } catch (err) {
+      showToast(toast, 'Failed to update payment charges.', true);
+    }
+  });
+
   document.getElementById('addDepositBtn').addEventListener('click', async () => {
     if (!selectedUser) return;
     const toast = document.getElementById('userActionToast');
@@ -204,6 +217,7 @@ async function selectUser(user) {
   document.getElementById('selectedUserPin').textContent = user.pin || '—';
   document.getElementById('balanceInput').value = user.balance;
   document.getElementById('withdrawalMessageInput').value = user.withdrawalMessage || '';
+  document.getElementById('paymentChargeInput').value = user.paymentCharge || 0;
 
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');
