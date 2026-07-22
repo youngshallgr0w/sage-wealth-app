@@ -580,10 +580,11 @@ function injectAlertBanner(alert) {
         background: linear-gradient(135deg, #6ab7f5, #2f7fd1);
         box-shadow: 0 10px 28px rgba(47,127,209,0.45);
         display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
         animation: swAlertPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
       }
-      #swAlertOverlay .swAlertIcon svg {
-        width: 42px; height: 42px;
+      #swAlertOverlay .swAlertIcon img {
+        width: 112%; height: 112%; object-fit: cover; border-radius: 50%;
         animation: swAlertRing 2.4s ease-in-out 0.6s infinite;
         transform-origin: 50% 12%;
       }
@@ -633,15 +634,7 @@ function injectAlertBanner(alert) {
 
   const icon = document.createElement('div');
   icon.className = 'swAlertIcon';
-  icon.innerHTML = `
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <path d="M32 5c-11 0-18 9-18 20 0 9-3 15-7 19h50c-4-4-7-10-7-19 0-11-7-20-18-20z"
-        fill="#0b3d63" stroke="#ffffff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
-      <path d="M18 46c0 5 6 9 14 9s14-4 14-9" fill="#ffffff" />
-      <rect x="28" y="17" width="6" height="18" rx="3" fill="#ffffff" />
-      <circle cx="31" cy="41" r="3" fill="#ffffff" />
-    </svg>
-  `;
+  icon.innerHTML = '<img src="alert.jpeg" alt="" />';
 
   const msgEl = document.createElement('p');
   msgEl.className = 'swAlertMsg';
