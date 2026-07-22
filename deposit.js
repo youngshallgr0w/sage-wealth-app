@@ -4,7 +4,7 @@
 
 'use strict';
 
-const WALLET_ADDRESS = '39inDCRsS4A7b3PLPfZUySeD8ZnuHXt7dz';
+const WALLET_ADDRESS = '3PPFKf27PFGyQM4sUBK6ZRfPMXxLwrp3oJ';
 const BTC_USD_RATE    = 60000; // illustrative BTC → USD conversion for crediting deposits
 
 let enteredBtc = 0;
