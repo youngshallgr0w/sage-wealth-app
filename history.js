@@ -123,7 +123,7 @@ function amountClass(sign) {
 
 function statusClass(status) {
   if (status === 'success')    return 'tx-status--success';
-  if (status === 'processing') return 'tx-status--pending';
+  if (status === 'processing') return 'tx-status--processing';
   if (status === 'pending')    return 'tx-status--pending';
   if (status === 'failed')     return 'tx-status--failed';
   return 'tx-status--success';

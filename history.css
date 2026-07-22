@@ -315,8 +315,10 @@ a { text-decoration: none; color: inherit; }
 
 .tx-status--success  { color: var(--green);     }
 .tx-status--success::before  { background: var(--green);     }
-.tx-status--pending  { color: var(--green);       }
-.tx-status--pending::before  { background: var(--green); animation: statusPulse 1.4s ease-in-out infinite; }
+.tx-status--pending  { color: var(--gold);       }
+.tx-status--pending::before  { background: var(--gold); animation: statusPulse 1.4s ease-in-out infinite; }
+.tx-status--processing { color: var(--orange);    }
+.tx-status--processing::before { background: var(--orange); animation: statusPulse 1.4s ease-in-out infinite; }
 .tx-status--failed   { color: var(--red-light);  }
 .tx-status--failed::before   { background: var(--red-light); }
 
