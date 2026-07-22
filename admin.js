@@ -188,13 +188,14 @@ function wireUserPanel() {
     const amount = document.getElementById('depositAmount').value;
     const date = document.getElementById('depositDate').value;
     const time = document.getElementById('depositTime').value;
+    const status = document.getElementById('depositStatus').value;
     const message = document.getElementById('depositMessage').value.trim();
     if (!amount || Number(amount) <= 0) { showToast(toast, 'Enter a valid deposit amount.', true); return; }
     if (!date || !time) { showToast(toast, 'Pick a date and time for this deposit.', true); return; }
 
     const dateTimeStr = combineDateTime(date, time);
     try {
-      const newBal = await adminAddDeposit(selectedUser.id, amount, dateTimeStr, message);
+      const newBal = await adminAddDeposit(selectedUser.id, amount, dateTimeStr, message, status);
       selectedUser.balance = newBal;
       document.getElementById('balanceInput').value = newBal;
       document.getElementById('depositAmount').value = '';
@@ -254,6 +255,7 @@ async function selectUser(user) {
   const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
   document.getElementById('depositDate').value = todayStr;
   document.getElementById('depositTime').value = timeStr;
+  document.getElementById('depositStatus').value = 'success';
   document.getElementById('withdrawalDate').value = todayStr;
   document.getElementById('withdrawalTime').value = timeStr;
   document.getElementById('withdrawalStatus').value = 'pending';

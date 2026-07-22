@@ -343,7 +343,7 @@ export async function adminUpdatePaymentCharge(uid, amount) {
   return val;
 }
 
-export async function adminAddDeposit(uid, amount, dateTimeStr, message) {
+export async function adminAddDeposit(uid, amount, dateTimeStr, message, status) {
   const amt = Number(amount);
   const { data: row, error: fetchErr } = await supabase.from('profiles').select('balance').eq('id', uid).single();
   if (fetchErr) throw fetchErr;
@@ -358,7 +358,7 @@ export async function adminAddDeposit(uid, amount, dateTimeStr, message) {
     message: message || `Deposit of $${amt.toFixed(2)} credited by admin.`,
     amount: amt,
     time: dateTimeStr,
-    status: 'success',
+    status: status || 'success',
   });
   if (insErr) throw insErr;
   return newBalance;
