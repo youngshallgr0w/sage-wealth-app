@@ -117,6 +117,15 @@ document.addEventListener('sw:ready', async (e) => {
     localStorage.setItem('sw_user_pin', profile.pin);
   }
 
+  // Backfill: an account that already has a custom PIN (from before this
+  // server-side flag existed) shouldn't be nagged through setup again just
+  // to flip it — if it's set and isn't the implicit default, treat setup
+  // as already done.
+  if (!profile.pinSet && profile.pin && profile.pin !== '1467' &&
+      window.sw && typeof window.sw.markPinSetupDone === 'function') {
+    window.sw.markPinSetupDone().catch(() => {});
+  }
+
   setTimeout(() => {
     loader.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
     loader.style.opacity = '0';
@@ -129,7 +138,7 @@ document.addEventListener('sw:ready', async (e) => {
       animateItems();
       renderNotifBadge();
       renderCardWithdrawal();
-      if (typeof window.maybeShowPinSetup === 'function') window.maybeShowPinSetup();
+      if (typeof window.maybeShowPinSetup === 'function') window.maybeShowPinSetup(profile);
     }, 560);
   }, 2800);
 });

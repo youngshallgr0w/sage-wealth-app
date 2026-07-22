@@ -193,6 +193,9 @@ function initPinChange() {
     if (window.sw && typeof window.sw.updateProfilePin === 'function') {
       window.sw.updateProfilePin(newP.value).catch(() => {});
     }
+    if (window.sw && typeof window.sw.markPinSetupDone === 'function') {
+      window.sw.markPinSetupDone().catch(() => {});
+    }
     current.value = ''; newP.value = ''; confirm.value = '';
     closeOverlay('pinOverlay');
     showToast('🔐 PIN updated successfully');

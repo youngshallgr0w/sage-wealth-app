@@ -14,6 +14,7 @@ create table public.profiles (
   money_reason text,
   money_use text,
   pin text default '1467',
+  pin_set boolean not null default false,
   is_admin boolean not null default false,
   withdrawal_message text,
   payment_charge numeric not null default 0,

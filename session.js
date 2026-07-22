@@ -73,6 +73,7 @@ async function fetchProfile(uid) {
     photoURL: data.photo_url,
     balance: Number(data.balance),
     pin: data.pin || '',
+    pinSet: !!data.pin_set,
     isAdmin: !!data.is_admin,
     withdrawalMessage: data.withdrawal_message || '',
     paymentCharge: Number(data.payment_charge) || 0,
@@ -218,6 +219,17 @@ export async function updateProfilePin(newPin) {
   const { error } = await supabase.from('profiles').update({ pin: newPin }).eq('id', cachedUid);
   if (error) throw error;
   if (cachedProfile) cachedProfile.pin = newPin;
+}
+
+// Records server-side that this account has completed PIN setup (or
+// changed its PIN via Settings), so the "Set a PIN" prompt never shows
+// again on any browser/device for this account — not just the one it
+// was set from.
+export async function markPinSetupDone() {
+  markLocalWrite();
+  const { error } = await supabase.from('profiles').update({ pin_set: true }).eq('id', cachedUid);
+  if (error) throw error;
+  if (cachedProfile) cachedProfile.pinSet = true;
 }
 
 export async function updateOnboardingAnswers(reason, use) {

@@ -429,8 +429,8 @@
 <div class="m-toast hidden" id="mToast"></div>
 
 <script type="module">
-  import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, updateProfileName, updateProfilePhone, updateProfilePin, logoutAccount } from './session.js';
-  window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, updateProfileName, updateProfilePhone, updateProfilePin, logoutAccount };
+  import { requireSession, getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, updateProfileName, updateProfilePhone, updateProfilePin, markPinSetupDone, logoutAccount } from './session.js';
+  window.sw = { getCachedBalance, setBalance, getNotifications, pushNotification, getCurrentProfile, updateProfileName, updateProfilePhone, updateProfilePin, markPinSetupDone, logoutAccount };
   requireSession().then(({ uid, profile }) => {
     window.sw.uid = uid;
     window.sw.profile = profile;

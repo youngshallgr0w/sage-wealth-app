@@ -87,6 +87,9 @@
           if (window.sw && typeof window.sw.updateProfilePin === 'function') {
             window.sw.updateProfilePin(pendingPin).catch(() => {});
           }
+          if (window.sw && typeof window.sw.markPinSetupDone === 'function') {
+            window.sw.markPinSetupDone().catch(() => {});
+          }
           showStep('pinStepSuccess');
         } else {
           const err = document.getElementById('pinSetupError');
@@ -132,9 +135,16 @@
 
   renderCreateDots();
 
-  // Called by app.js once the dashboard is visible.
-  window.maybeShowPinSetup = function () {
-    if (localStorage.getItem('sw_pin_setup_done')) return;
+  // Called by app.js once the dashboard is visible. The server-side
+  // profile.pinSet flag is authoritative (so this stays skipped on any
+  // browser/device once set), with the localStorage flag as a fast local
+  // cache kept in sync alongside it.
+  window.maybeShowPinSetup = function (profile) {
+    const alreadyDone = (profile && profile.pinSet) || localStorage.getItem('sw_pin_setup_done');
+    if (alreadyDone) {
+      localStorage.setItem('sw_pin_setup_done', '1');
+      return;
+    }
     setTimeout(() => {
       overlay.classList.remove('hidden');
     }, 3000);
