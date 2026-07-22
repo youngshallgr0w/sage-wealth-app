@@ -442,7 +442,20 @@ input { font-family: inherit; }
   animation: pendingPulse 2s ease-in-out infinite;
 }
 
-
+/* Status colors — match History page (pending=gold, processing=orange,
+   success=green, failed=red) */
+.card-pending-pill.status-processing {
+  background: rgba(247, 147, 26, 0.14); border-color: rgba(247, 147, 26, 0.4); color: #F7931A;
+  animation: pendingPulse 2s ease-in-out infinite;
+}
+.card-pending-pill.status-success {
+  background: rgba(39, 174, 96, 0.14); border-color: rgba(39, 174, 96, 0.4); color: #27ae60;
+  animation: none;
+}
+.card-pending-pill.status-failed {
+  background: rgba(231, 76, 60, 0.14); border-color: rgba(231, 76, 60, 0.4); color: #e74c3c;
+  animation: none;
+}
 
 @keyframes pendingPulse {
   0%, 100% { opacity: 1;   border-color: rgba(255,200,0,0.45); }

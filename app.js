@@ -157,29 +157,37 @@ async function renderCardWithdrawal() {
   const valueEl = firstCell.querySelector('.card-detail-value');
   if (!labelEl || !valueEl) return;
 
+  // getNotifications() returns oldest-first, so the last entry is
+  // whichever transaction — deposit or withdrawal — happened most
+  // recently. Re-run any time the page loads/reloads so this always
+  // reflects the latest state, including admin-side status changes.
   const notifs = await getNotifications();
-  const withdraws = notifs.filter(n => n.type === 'withdraw');
 
-  if (withdraws.length === 0) {
+  if (notifs.length === 0) {
     labelEl.textContent = 'RECENT';
     valueEl.textContent = 'No transactions';
     valueEl.className = 'card-detail-value';
+    const existingPill = firstCell.querySelector('.card-pending-pill');
+    if (existingPill) existingPill.remove();
     return;
   }
 
-  const last = withdraws[withdraws.length - 1];
+  const last = notifs[notifs.length - 1];
   const amt = parseFloat(last.amount || 0);
+  const isDeposit = last.type === 'deposit';
+  const status = last.status || (isDeposit ? 'success' : 'pending');
 
-  labelEl.textContent = 'WITHDRAWAL';
-  valueEl.textContent = '-$' + amt.toFixed(2);
+  labelEl.textContent = isDeposit ? 'DEPOSIT' : 'WITHDRAWAL';
+  valueEl.textContent = (isDeposit ? '+$' : '-$') + amt.toFixed(2);
   valueEl.className = 'card-detail-value card-withdraw-pending';
 
-  if (!firstCell.querySelector('.card-pending-pill')) {
-    const pill = document.createElement('span');
-    pill.className = 'card-pending-pill';
-    pill.textContent = 'PENDING';
+  let pill = firstCell.querySelector('.card-pending-pill');
+  if (!pill) {
+    pill = document.createElement('span');
     firstCell.appendChild(pill);
   }
+  pill.className = 'card-pending-pill' + (status === 'pending' ? '' : ' status-' + status);
+  pill.textContent = status.toUpperCase();
 }
 
 // ════════════════════════════════════════════
