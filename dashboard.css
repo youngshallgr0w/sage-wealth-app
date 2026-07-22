@@ -294,6 +294,7 @@ a { text-decoration: none; color: inherit; }
 
 .db-bank-id {
   display: block;
+  font-family: 'Plus Jakarta Sans', var(--font-body);
   font-size: 10px;
   color: var(--text-muted);
   letter-spacing: 0.5px;
@@ -355,7 +356,7 @@ a { text-decoration: none; color: inherit; }
   animation: fadeUp 0.5s ease both;
 }
 
-.greeting-name { color: var(--red-light); }
+.greeting-name { color: var(--red-light); font-family: 'Plus Jakarta Sans', var(--font-body); }
 
 .greeting-wave {
   font-size: 1.5rem;
