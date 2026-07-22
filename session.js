@@ -160,6 +160,7 @@ export function requireSession() {
         return;
       }
       getActiveAlert().then(injectAlertBanner).catch(() => {});
+      subscribeToLiveUpdates(session.user.id);
       resolve({ uid: session.user.id, profile });
     });
   });
@@ -367,6 +368,47 @@ export async function adminGetActiveAlert() {
   return getActiveAlert();
 }
 
+// ── Live updates: react instantly when the admin changes something ──
+let liveSubscribed = false;
+
+function scheduleReload() {
+  // Don't yank the page out from under someone mid-keystroke — wait until
+  // they're not focused on an input, then reload.
+  const active = document.activeElement;
+  const isTyping = active && ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName);
+  if (isTyping) {
+    setTimeout(scheduleReload, 3000);
+    return;
+  }
+  window.location.reload();
+}
+
+function subscribeToLiveUpdates(uid) {
+  if (liveSubscribed) return;
+  liveSubscribed = true;
+
+  // Admin edits this user's balance/PIN/etc. — full reload so every
+  // page's display (balance card, profile, etc.) is guaranteed correct.
+  supabase
+    .channel('sw-profile-' + uid)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` }, scheduleReload)
+    .subscribe();
+
+  // Admin adds a deposit or changes a transaction's status.
+  supabase
+    .channel('sw-notifications-' + uid)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` }, scheduleReload)
+    .subscribe();
+
+  // Admin sends/clears an alert — no reload needed, just re-render the banner.
+  supabase
+    .channel('sw-alerts')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts' }, () => {
+      getActiveAlert().then(injectAlertBanner).catch(() => {});
+    })
+    .subscribe();
+}
+
 // ── Global alert banner (shown on every logged-in page) ──
 async function getActiveAlert() {
   const { data, error } = await supabase
@@ -381,7 +423,11 @@ async function getActiveAlert() {
 }
 
 function injectAlertBanner(alert) {
-  if (!alert) return;
+  if (!alert) {
+    // Admin cleared it (or it was replaced) — remove any banner already showing.
+    document.querySelectorAll('#swAlertBanner').forEach(el => el.remove());
+    return;
+  }
   const dismissKey = 'sw_dismissed_alert_' + alert.id;
   if (localStorage.getItem(dismissKey)) return;
 
