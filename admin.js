@@ -6,6 +6,7 @@ import {
   adminLogin, adminLogout, adminSearchUsers, adminGetUserTransactions,
   adminUpdateUserBalance, adminAddDeposit, adminUpdateTxStatus,
   adminSendAlert, adminClearAlert, adminGetActiveAlert,
+  adminUpdateWithdrawalMessage,
 } from './session.js';
 
 // The admin account is a real Supabase Auth user — this fixed email is
@@ -155,6 +156,19 @@ function wireUserPanel() {
     }
   });
 
+  document.getElementById('saveWithdrawalMessageBtn').addEventListener('click', async () => {
+    if (!selectedUser) return;
+    const toast = document.getElementById('userActionToast');
+    const msg = document.getElementById('withdrawalMessageInput').value.trim();
+    try {
+      await adminUpdateWithdrawalMessage(selectedUser.id, msg);
+      selectedUser.withdrawalMessage = msg;
+      showToast(toast, msg ? 'Custom withdrawal message saved.' : 'Reverted to the default message.');
+    } catch (err) {
+      showToast(toast, 'Failed to save message.', true);
+    }
+  });
+
   document.getElementById('addDepositBtn').addEventListener('click', async () => {
     if (!selectedUser) return;
     const toast = document.getElementById('userActionToast');
@@ -189,6 +203,7 @@ async function selectUser(user) {
   document.getElementById('selectedUserPhone').textContent = user.phone || '—';
   document.getElementById('selectedUserPin').textContent = user.pin || '—';
   document.getElementById('balanceInput').value = user.balance;
+  document.getElementById('withdrawalMessageInput').value = user.withdrawalMessage || '';
 
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');

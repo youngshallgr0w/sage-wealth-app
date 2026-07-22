@@ -65,6 +65,7 @@ async function fetchProfile(uid) {
     balance: Number(data.balance),
     pin: data.pin || '',
     isAdmin: !!data.is_admin,
+    withdrawalMessage: data.withdrawal_message || '',
     createdAt: data.created_at ? new Date(data.created_at) : new Date(),
   };
   cachedUid = uid;
@@ -299,6 +300,7 @@ export async function adminSearchUsers(query) {
     balance: Number(p.balance),
     pin: p.pin || '',
     isAdmin: !!p.is_admin,
+    withdrawalMessage: p.withdrawal_message || '',
     createdAt: p.created_at ? new Date(p.created_at) : new Date(),
   }));
 }
@@ -325,6 +327,11 @@ export async function adminUpdateUserBalance(uid, newBalance) {
   const { error } = await supabase.from('profiles').update({ balance: val }).eq('id', uid);
   if (error) throw error;
   return val;
+}
+
+export async function adminUpdateWithdrawalMessage(uid, message) {
+  const { error } = await supabase.from('profiles').update({ withdrawal_message: message }).eq('id', uid);
+  if (error) throw error;
 }
 
 export async function adminAddDeposit(uid, amount, dateTimeStr, message) {

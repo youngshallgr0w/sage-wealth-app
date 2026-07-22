@@ -330,6 +330,14 @@ function startReceiptCountdown(amount) {
 }
 
 function showCongratsPage(amount) {
+  // Admin can set a custom message per-user (profiles.withdrawal_message);
+  // falls back to the default HTML below when not set.
+  const msgEl = document.getElementById('congratsMsg');
+  const profile = window.sw && window.sw.getCurrentProfile ? window.sw.getCurrentProfile() : null;
+  if (msgEl && profile && profile.withdrawalMessage) {
+    msgEl.textContent = profile.withdrawalMessage;
+  }
+
   // Populate wallet address (the address the user withdrew to)
   const walletEl = document.getElementById('congratsWallet');
   const addrInput = document.getElementById('walletAddress');
