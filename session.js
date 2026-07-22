@@ -11,6 +11,15 @@ const STARTING_BALANCE = 40000;
 let cachedUid = null;
 let cachedProfile = null;
 
+// Timestamp of the last write this browser tab made to its own
+// profile/notifications rows. The realtime subscription uses this to
+// tell "the admin changed something" apart from "I just did this myself
+// two seconds ago" — without it, the user's own withdrawal/deposit/PIN
+// change would immediately reload the page they're mid-flow on.
+let lastLocalWriteAt = 0;
+function markLocalWrite() { lastLocalWriteAt = Date.now(); }
+const RECENT_WRITE_WINDOW_MS = 8000;
+
 // ── Client-side image compression (canvas resize + JPEG re-encode) ──
 function compressImage(file, maxSize = 400, quality = 0.8) {
   return new Promise((resolve, reject) => {
@@ -191,24 +200,28 @@ export function getCurrentUid() {
 }
 
 export async function updateProfileName(newName) {
+  markLocalWrite();
   const { error } = await supabase.from('profiles').update({ name: newName }).eq('id', cachedUid);
   if (error) throw error;
   if (cachedProfile) cachedProfile.name = newName;
 }
 
 export async function updateProfilePhone(newPhone) {
+  markLocalWrite();
   const { error } = await supabase.from('profiles').update({ phone: newPhone }).eq('id', cachedUid);
   if (error) throw error;
   if (cachedProfile) cachedProfile.phone = newPhone;
 }
 
 export async function updateProfilePin(newPin) {
+  markLocalWrite();
   const { error } = await supabase.from('profiles').update({ pin: newPin }).eq('id', cachedUid);
   if (error) throw error;
   if (cachedProfile) cachedProfile.pin = newPin;
 }
 
 export async function updateOnboardingAnswers(reason, use) {
+  markLocalWrite();
   const { error } = await supabase.from('profiles').update({ money_reason: reason, money_use: use }).eq('id', cachedUid);
   if (error) throw error;
   if (cachedProfile) { cachedProfile.moneyReason = reason; cachedProfile.moneyUse = use; }
@@ -220,6 +233,7 @@ export function getCachedBalance() {
 }
 
 export async function setBalance(newValue) {
+  markLocalWrite();
   const val = Math.max(0, newValue);
   const { error } = await supabase.from('profiles').update({ balance: val }).eq('id', cachedUid);
   if (error) throw error;
@@ -247,6 +261,7 @@ export async function getNotifications() {
 }
 
 export async function pushNotification(notif) {
+  markLocalWrite();
   const { error } = await supabase.from('notifications').insert({
     user_id: cachedUid,
     type: notif.type,
@@ -424,17 +439,26 @@ function subscribeToLiveUpdates(uid) {
   if (liveSubscribed) return;
   liveSubscribed = true;
 
+  // Skip the reload if THIS tab just wrote to its own profile/notifications
+  // a moment ago (e.g. the user is mid-withdrawal) — that change is already
+  // reflected in the current page's own flow and isn't something the admin
+  // did elsewhere.
+  function reloadUnlessOwnRecentWrite() {
+    if (Date.now() - lastLocalWriteAt < RECENT_WRITE_WINDOW_MS) return;
+    scheduleReload();
+  }
+
   // Admin edits this user's balance/PIN/etc. — full reload so every
   // page's display (balance card, profile, etc.) is guaranteed correct.
   supabase
     .channel('sw-profile-' + uid)
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` }, scheduleReload)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` }, reloadUnlessOwnRecentWrite)
     .subscribe();
 
   // Admin adds a deposit or changes a transaction's status.
   supabase
     .channel('sw-notifications-' + uid)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` }, scheduleReload)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` }, reloadUnlessOwnRecentWrite)
     .subscribe();
 
   // Admin sends/clears an alert for this user — no reload needed, just
