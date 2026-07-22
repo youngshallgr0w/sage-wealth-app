@@ -1101,7 +1101,7 @@ input { font-family: inherit; }
 .pin-step-btn {
   width: 100%; padding: 16px; border-radius: 16px; background: var(--red); color: #fff;
   font-size: 16px; font-weight: 700; font-family: var(--font-bank); letter-spacing: -0.1px;
-  margin-top: 20px; margin-bottom: 40px;
+  margin-top: 20px; margin-bottom: 50px;
   transition: opacity 0.2s ease, transform 0.15s ease;
   flex-shrink: 0;
 }
