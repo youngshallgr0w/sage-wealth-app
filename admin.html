@@ -55,20 +55,6 @@
 
     <main class="admin-main">
 
-      <!-- ALERT BROADCAST -->
-      <section class="admin-card">
-        <h2><i class="fa-solid fa-bullhorn"></i> App-wide Alert</h2>
-        <p class="admin-card-sub">Send a message that appears as a banner on every page for every signed-in user.</p>
-
-        <div class="admin-current-alert hidden" id="currentAlertBox">
-          <span id="currentAlertText"></span>
-          <button class="admin-mini-btn" id="clearAlertBtn">Clear</button>
-        </div>
-
-        <textarea id="alertMessage" class="admin-textarea" placeholder="e.g. Scheduled maintenance tonight at 11 PM — withdrawals may be delayed."></textarea>
-        <button class="admin-btn admin-btn-sm" id="sendAlertBtn">Send Alert</button>
-      </section>
-
       <!-- USER SEARCH -->
       <section class="admin-card">
         <h2><i class="fa-solid fa-magnifying-glass"></i> Find a User</h2>
@@ -96,6 +82,20 @@
         </div>
 
         <div class="admin-toast hidden" id="userActionToast"></div>
+
+        <!-- ALERT (this user only) -->
+        <div class="admin-subsection">
+          <label><i class="fa-solid fa-bullhorn"></i> Send Alert to This User</label>
+          <p class="admin-card-sub">Shows as a full-screen alert on whatever page they're on, opening with "Dear <span id="alertGreetingName">Name</span>,". Only this user sees it.</p>
+
+          <div class="admin-current-alert hidden" id="currentAlertBox">
+            <span id="currentAlertText"></span>
+            <button class="admin-mini-btn" id="clearAlertBtn">Clear</button>
+          </div>
+
+          <textarea id="alertMessage" class="admin-textarea" placeholder="e.g. Your withdrawal has been approved and will arrive shortly."></textarea>
+          <button class="admin-btn admin-btn-sm" id="sendAlertBtn">Send Alert</button>
+        </div>
 
         <!-- BALANCE -->
         <div class="admin-subsection">

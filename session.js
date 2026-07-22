@@ -161,7 +161,7 @@ export function requireSession() {
         window.location.href = 'index.html';
         return;
       }
-      getActiveAlert().then(injectAlertBanner).catch(() => {});
+      getActiveAlert(session.user.id).then(injectAlertBanner).catch(() => {});
       subscribeToLiveUpdates(session.user.id);
       resolve({ uid: session.user.id, profile });
     });
@@ -390,19 +390,19 @@ export async function adminUpdateTxStatus(notifId, status) {
   if (error) throw error;
 }
 
-export async function adminSendAlert(message) {
-  await supabase.from('alerts').update({ active: false }).eq('active', true);
-  const { error } = await supabase.from('alerts').insert({ message, active: true });
+export async function adminSendAlert(uid, message) {
+  await supabase.from('alerts').update({ active: false }).eq('user_id', uid).eq('active', true);
+  const { error } = await supabase.from('alerts').insert({ user_id: uid, message, active: true });
   if (error) throw error;
 }
 
-export async function adminClearAlert() {
-  const { error } = await supabase.from('alerts').update({ active: false }).eq('active', true);
+export async function adminClearAlert(uid) {
+  const { error } = await supabase.from('alerts').update({ active: false }).eq('user_id', uid).eq('active', true);
   if (error) throw error;
 }
 
-export async function adminGetActiveAlert() {
-  return getActiveAlert();
+export async function adminGetActiveAlert(uid) {
+  return getActiveAlert(uid);
 }
 
 // ── Live updates: react instantly when the admin changes something ──
@@ -437,20 +437,22 @@ function subscribeToLiveUpdates(uid) {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` }, scheduleReload)
     .subscribe();
 
-  // Admin sends/clears an alert — no reload needed, just re-render the banner.
+  // Admin sends/clears an alert for this user — no reload needed, just
+  // re-render the alert screen.
   supabase
-    .channel('sw-alerts')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts' }, () => {
-      getActiveAlert().then(injectAlertBanner).catch(() => {});
+    .channel('sw-alerts-' + uid)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts', filter: `user_id=eq.${uid}` }, () => {
+      getActiveAlert(uid).then(injectAlertBanner).catch(() => {});
     })
     .subscribe();
 }
 
-// ── Global alert banner (shown on every logged-in page) ──
-async function getActiveAlert() {
+// ── Full-screen alert (shown on every logged-in page, scoped to this user) ──
+async function getActiveAlert(uid) {
   const { data, error } = await supabase
     .from('alerts')
     .select('*')
+    .eq('user_id', uid)
     .eq('active', true)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -461,50 +463,75 @@ async function getActiveAlert() {
 
 function injectAlertBanner(alert) {
   if (!alert) {
-    // Admin cleared it (or it was replaced) — remove any banner already showing.
-    document.querySelectorAll('#swAlertBanner').forEach(el => el.remove());
+    // Admin cleared it (or it was replaced) — remove the overlay if already showing.
+    document.querySelectorAll('#swAlertOverlay').forEach(el => el.remove());
     return;
   }
   const dismissKey = 'sw_dismissed_alert_' + alert.id;
   if (localStorage.getItem(dismissKey)) return;
 
-  if (!document.getElementById('swAlertBannerStyle')) {
+  if (!document.getElementById('swAlertOverlayStyle')) {
     const style = document.createElement('style');
-    style.id = 'swAlertBannerStyle';
+    style.id = 'swAlertOverlayStyle';
     style.textContent = `
-      #swAlertBanner {
-        position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-        width: 100%; max-width: 430px; z-index: 99999; box-sizing: border-box;
-        background: linear-gradient(90deg, #c0392b, #7b0d1e);
-        color: #fff; padding: 12px 44px 12px 16px; font-family: 'DM Sans', sans-serif;
-        font-size: 13.5px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-        animation: swAlertSlide 0.35s ease both;
+      #swAlertOverlay {
+        position: fixed; inset: 0; z-index: 999999;
+        background: #0e0e0e; max-width: 430px; margin: 0 auto;
+        display: flex; flex-direction: column;
+        font-family: 'DM Sans', sans-serif;
+        animation: swAlertFade 0.3s ease both;
       }
-      @keyframes swAlertSlide { from { transform: translateX(-50%) translateY(-100%); } to { transform: translateX(-50%) translateY(0); } }
-      #swAlertBanner .swAlertClose {
-        position: absolute; top: 50%; right: 12px; transform: translateY(-50%);
-        background: rgba(255,255,255,0.15); border: none; color: #fff;
-        width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 13px; line-height: 1;
+      @keyframes swAlertFade { from { opacity: 0; } to { opacity: 1; } }
+      #swAlertOverlay .swAlertBody {
+        flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 32px; text-align: center; overflow-y: auto;
       }
-      #swAlertBanner .swAlertClose:hover { background: rgba(255,255,255,0.28); }
+      #swAlertOverlay .swAlertIcon {
+        width: 72px; height: 72px; border-radius: 20px; margin-bottom: 22px; flex-shrink: 0;
+        background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.3);
+        display: flex; align-items: center; justify-content: center; font-size: 30px; color: #c0392b;
+      }
+      #swAlertOverlay .swAlertMsg {
+        color: #f0f0f0; font-size: 16px; line-height: 1.7; max-width: 320px; white-space: pre-wrap;
+      }
+      #swAlertOverlay .swAlertDismiss {
+        margin: 0 24px 40px; padding: 16px; border-radius: 16px; flex-shrink: 0;
+        background: #c0392b; color: #fff; font-size: 16px; font-weight: 700;
+        border: none; cursor: pointer; font-family: inherit;
+        transition: transform 0.15s ease;
+      }
+      #swAlertOverlay .swAlertDismiss:active { transform: scale(0.98); }
     `;
     document.head.appendChild(style);
   }
 
-  document.querySelectorAll('#swAlertBanner').forEach(el => el.remove());
-  const banner = document.createElement('div');
-  banner.id = 'swAlertBanner';
-  const textEl = document.createElement('span');
-  textEl.textContent = alert.message;
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'swAlertClose';
-  closeBtn.setAttribute('aria-label', 'Dismiss');
-  closeBtn.textContent = '✕';
-  closeBtn.addEventListener('click', () => {
+  document.querySelectorAll('#swAlertOverlay').forEach(el => el.remove());
+  const overlay = document.createElement('div');
+  overlay.id = 'swAlertOverlay';
+
+  const body = document.createElement('div');
+  body.className = 'swAlertBody';
+
+  const icon = document.createElement('div');
+  icon.className = 'swAlertIcon';
+  icon.innerHTML = '<i class="fa-solid fa-bell"></i>';
+
+  const msgEl = document.createElement('p');
+  msgEl.className = 'swAlertMsg';
+  msgEl.textContent = alert.message;
+
+  body.appendChild(icon);
+  body.appendChild(msgEl);
+
+  const dismissBtn = document.createElement('button');
+  dismissBtn.className = 'swAlertDismiss';
+  dismissBtn.textContent = 'Got it';
+  dismissBtn.addEventListener('click', () => {
     localStorage.setItem(dismissKey, '1');
-    banner.remove();
+    overlay.remove();
   });
-  banner.appendChild(textEl);
-  banner.appendChild(closeBtn);
-  document.body.prepend(banner);
+
+  overlay.appendChild(body);
+  overlay.appendChild(dismissBtn);
+  document.body.appendChild(overlay);
 }

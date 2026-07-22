@@ -72,40 +72,22 @@ let dashInitialized = false;
 function initDashboard() {
   if (dashInitialized) return;
   dashInitialized = true;
-  loadActiveAlert();
-  wireAlertSection();
   wireSearch();
   wireUserPanel();
 }
 
-/* ── Alert broadcast ── */
+/* ── Alert (scoped to whichever user is currently selected) ── */
 const currentAlertBox  = document.getElementById('currentAlertBox');
 const currentAlertText = document.getElementById('currentAlertText');
 
-async function loadActiveAlert() {
-  const alert = await adminGetActiveAlert();
+async function loadUserAlert(uid) {
+  const alert = await adminGetActiveAlert(uid);
   if (alert) {
     currentAlertText.textContent = alert.message;
     currentAlertBox.classList.remove('hidden');
   } else {
     currentAlertBox.classList.add('hidden');
   }
-}
-
-function wireAlertSection() {
-  document.getElementById('sendAlertBtn').addEventListener('click', async () => {
-    const msgEl = document.getElementById('alertMessage');
-    const msg = msgEl.value.trim();
-    if (!msg) return;
-    await adminSendAlert(msg);
-    msgEl.value = '';
-    loadActiveAlert();
-  });
-
-  document.getElementById('clearAlertBtn').addEventListener('click', async () => {
-    await adminClearAlert();
-    loadActiveAlert();
-  });
 }
 
 /* ── User search ── */
@@ -142,6 +124,36 @@ function wireSearch() {
 
 /* ── Selected user panel ── */
 function wireUserPanel() {
+  document.getElementById('sendAlertBtn').addEventListener('click', async () => {
+    if (!selectedUser) return;
+    const toast = document.getElementById('userActionToast');
+    const msgEl = document.getElementById('alertMessage');
+    const raw = msgEl.value.trim();
+    if (!raw) return;
+    const firstName = (selectedUser.name || '').trim().split(/\s+/)[0] || 'there';
+    const fullMessage = `Dear ${firstName}, ${raw}`;
+    try {
+      await adminSendAlert(selectedUser.id, fullMessage);
+      msgEl.value = '';
+      loadUserAlert(selectedUser.id);
+      showToast(toast, 'Alert sent to ' + selectedUser.name + '.');
+    } catch (err) {
+      showToast(toast, 'Failed to send alert.', true);
+    }
+  });
+
+  document.getElementById('clearAlertBtn').addEventListener('click', async () => {
+    if (!selectedUser) return;
+    const toast = document.getElementById('userActionToast');
+    try {
+      await adminClearAlert(selectedUser.id);
+      loadUserAlert(selectedUser.id);
+      showToast(toast, 'Alert cleared.');
+    } catch (err) {
+      showToast(toast, 'Failed to clear alert.', true);
+    }
+  });
+
   document.getElementById('updateBalanceBtn').addEventListener('click', async () => {
     if (!selectedUser) return;
     const val = document.getElementById('balanceInput').value;
@@ -248,6 +260,9 @@ async function selectUser(user) {
   document.getElementById('balanceInput').value = user.balance;
   document.getElementById('withdrawalMessageInput').value = user.withdrawalMessage || '';
   document.getElementById('paymentChargeInput').value = user.paymentCharge || 0;
+  document.getElementById('alertGreetingName').textContent = (user.name || '').trim().split(/\s+/)[0] || 'there';
+  document.getElementById('alertMessage').value = '';
+  loadUserAlert(user.id);
 
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');

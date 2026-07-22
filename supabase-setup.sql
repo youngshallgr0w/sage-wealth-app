@@ -95,9 +95,10 @@ create policy "Admins can update notifications"
   on public.notifications for update
   using (public.is_admin());
 
--- ── ALERTS (admin broadcast banner, shown app-wide) ───────
+-- ── ALERTS (per-user admin alert, shown full-screen app-wide) ─
 create table public.alerts (
   id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade,
   message text not null,
   active boolean not null default true,
   created_at timestamptz not null default now()
@@ -105,9 +106,9 @@ create table public.alerts (
 
 alter table public.alerts enable row level security;
 
-create policy "Signed-in users can view alerts"
+create policy "Users can view their own alerts"
   on public.alerts for select
-  using (true);
+  using (auth.uid() = user_id or public.is_admin());
 
 create policy "Admins can insert alerts"
   on public.alerts for insert
