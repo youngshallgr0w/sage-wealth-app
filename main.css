@@ -753,7 +753,10 @@ input { font-family: inherit; }
   gap: 4px;
   flex: 1;
   height: 100%;
-  color: var(--text-dim);
+  /* Fixed, not theme-linked: .bottom-nav's background stays dark in both
+     themes, so these must too — var(--text)/var(--text-dim) flip to
+     near-black in light mode and become invisible against it. */
+  color: rgba(255,255,255,0.45);
   font-size: 0.62rem;
   font-weight: 500;
   letter-spacing: 0.4px;
@@ -761,7 +764,7 @@ input { font-family: inherit; }
   text-decoration: none;
 }
 .nav-item i { font-size: 1.2rem; }
-.nav-item.active { color: var(--text); }
+.nav-item.active { color: #f0f0f0; }
 .nav-item.active i { color: var(--red); }
 .nav-item:active { transform: scale(0.88); }
 
