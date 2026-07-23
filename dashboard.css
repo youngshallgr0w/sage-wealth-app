@@ -708,7 +708,7 @@ a { text-decoration: none; color: inherit; }
   width: 100%;
   max-width: 430px;
   height: var(--nav-h);
-  background: #161616;
+  background: var(--surface);
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -725,10 +725,7 @@ a { text-decoration: none; color: inherit; }
   gap: 4px;
   flex: 1;
   height: 100%;
-  /* Fixed, not theme-linked: .bottom-nav's background stays dark in both
-     themes, so these must too — var(--text)/var(--text-dim) flip to
-     near-black in light mode and become invisible against it. */
-  color: rgba(255,255,255,0.45);
+  color: var(--text-dim);
   font-size: 0.62rem;
   font-weight: 500;
   letter-spacing: 0.4px;
@@ -736,7 +733,7 @@ a { text-decoration: none; color: inherit; }
   transition: color var(--tr), transform var(--tr);
 }
 .nav-item i { font-size: 1.2rem; }
-.nav-item.active { color: #f0f0f0; }
+.nav-item.active { color: var(--text); }
 .nav-item.active i { color: var(--red); }
 .nav-item:active { transform: scale(0.88); }
 
