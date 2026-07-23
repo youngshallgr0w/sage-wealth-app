@@ -48,6 +48,21 @@
   --trans:         0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Light theme (toggled via Settings > Dark Mode) ── */
+[data-theme="light"] {
+  --bg-base:       #e8ebee;
+  --bg-screen:     #f4f6f8;
+  --bg-card:       #ffffff;
+  --bg-item:       #f0f0f0;
+  --bg-hover:      #e8e8e8;
+  --border:        rgba(0,0,0,0.08);
+  --border-mid:    rgba(0,0,0,0.12);
+  --border-strong: rgba(0,0,0,0.18);
+  --text-main:     #1a1a1a;
+  --text-muted:    #666666;
+  --text-sub:      #999999;
+}
+
 /* ── RESET ───────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;

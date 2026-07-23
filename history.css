@@ -29,6 +29,17 @@
   --tr:          0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
+/* ── Light theme (toggled via Settings > Dark Mode) ── */
+[data-theme="light"] {
+  --bg:          #f4f6f8;
+  --surface:     #ffffff;
+  --surface2:    #f0f0f0;
+  --text:        #1a1a1a;
+  --text-muted:  #666666;
+  --text-dim:    #aaaaaa;
+  --border:      #e0e0e0;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
 
