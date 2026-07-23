@@ -93,7 +93,7 @@ const badge = document.querySelector('.notif-btn .badge');
 // ════════════════════════════════════════════
 
 document.addEventListener('sw:ready', async (e) => {
-  const { profile } = e.detail;
+  const { uid, profile } = e.detail;
 
   balance = profile.balance || 0;
   if (balanceAmount) balanceAmount.textContent = formatCurrency(balance);
@@ -104,17 +104,20 @@ document.addEventListener('sw:ready', async (e) => {
   if (usernameEl) usernameEl.textContent = profile.name;
 
   // Keep the withdrawal PIN in sync between this device and Supabase.
-  // This device's localStorage is authoritative if it already has a PIN
-  // (never overwrite a real chosen PIN with a stale/default DB value) —
-  // push it up instead. Only adopt the DB's value on a fresh device that
-  // has never set one locally.
-  const localPin = localStorage.getItem('sw_user_pin');
+  // Scoped per-uid — a plain 'sw_user_pin' key would leak one account's
+  // PIN into another account tested on the same browser. This device's
+  // localStorage is authoritative if it already has a PIN for *this*
+  // account (never overwrite a real chosen PIN with a stale/default DB
+  // value) — push it up instead. Only adopt the DB's value on a fresh
+  // device that has never set one locally for this account.
+  const pinKey = 'sw_user_pin_' + uid;
+  const localPin = localStorage.getItem(pinKey);
   if (localPin) {
     if (profile.pin !== localPin && window.sw && typeof window.sw.updateProfilePin === 'function') {
       window.sw.updateProfilePin(localPin).catch(() => {});
     }
   } else if (profile.pin) {
-    localStorage.setItem('sw_user_pin', profile.pin);
+    localStorage.setItem(pinKey, profile.pin);
   }
 
   // Backfill: an account that already has a custom PIN (from before this

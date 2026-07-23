@@ -196,7 +196,11 @@ let pinEntry = '';
 let pinLength = 4;
 
 function currentStoredPin() {
-  return localStorage.getItem('sw_user_pin') || '1467';
+  // Scoped per-uid — a plain 'sw_user_pin' key would leak one account's
+  // PIN into another account tested on the same browser.
+  const uid = window.sw && window.sw.uid;
+  const key = uid ? 'sw_user_pin_' + uid : 'sw_user_pin';
+  return localStorage.getItem(key) || '1467';
 }
 
 function renderPinDots() {

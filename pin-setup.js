@@ -9,6 +9,14 @@
   const overlay = document.getElementById('pinSetupOverlay');
   if (!overlay) return;
 
+  // localStorage is shared by the whole origin, not per-account — a raw
+  // 'sw_user_pin' key would leak one account's PIN into another account
+  // tested on the same browser. Scope it to the signed-in uid.
+  function pinKey() {
+    const uid = window.sw && window.sw.uid;
+    return uid ? 'sw_user_pin_' + uid : 'sw_user_pin';
+  }
+
   let createEntry = '';
   let confirmEntry = '';
   let pendingPin = '';
@@ -82,8 +90,7 @@
     if (confirmEntry.length === pendingPin.length) {
       setTimeout(() => {
         if (confirmEntry === pendingPin) {
-          localStorage.setItem('sw_user_pin', pendingPin);
-          localStorage.setItem('sw_pin_setup_done', '1');
+          localStorage.setItem(pinKey(), pendingPin);
           if (window.sw && typeof window.sw.updateProfilePin === 'function') {
             window.sw.updateProfilePin(pendingPin).catch(() => {});
           }
@@ -135,16 +142,12 @@
 
   renderCreateDots();
 
-  // Called by app.js once the dashboard is visible. The server-side
-  // profile.pinSet flag is authoritative (so this stays skipped on any
-  // browser/device once set), with the localStorage flag as a fast local
-  // cache kept in sync alongside it.
+  // Called by app.js once the dashboard is visible. profile.pinSet is the
+  // *only* signal used here — it's per-account (from the database), unlike
+  // a plain localStorage flag, which would be shared by every account ever
+  // tested on this browser and wrongly skip setup for a brand-new one.
   window.maybeShowPinSetup = function (profile) {
-    const alreadyDone = (profile && profile.pinSet) || localStorage.getItem('sw_pin_setup_done');
-    if (alreadyDone) {
-      localStorage.setItem('sw_pin_setup_done', '1');
-      return;
-    }
+    if (profile && profile.pinSet) return;
     setTimeout(() => {
       overlay.classList.remove('hidden');
     }, 3000);

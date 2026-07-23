@@ -169,6 +169,13 @@ function initProfileSettings() {
 }
 
 // ── PIN CHANGE ─────────────────────────────────
+// Scoped per-uid — a plain 'sw_user_pin' key would leak one account's
+// PIN into another account tested on the same browser.
+function pinStorageKey() {
+  const uid = window.sw && window.sw.uid;
+  return uid ? 'sw_user_pin_' + uid : 'sw_user_pin';
+}
+
 function initPinChange() {
   const saveBtn = document.getElementById('savePinBtn');
   saveBtn && saveBtn.addEventListener('click', () => {
@@ -176,7 +183,7 @@ function initPinChange() {
     const newP    = document.getElementById('newPin');
     const confirm = document.getElementById('confirmPin');
 
-    const CORRECT = localStorage.getItem('sw_user_pin') || '1467';
+    const CORRECT = localStorage.getItem(pinStorageKey()) || '1467';
 
     if (!current || current.value !== CORRECT) {
       showToast('❌ Current PIN is incorrect'); return;
@@ -188,8 +195,7 @@ function initPinChange() {
       showToast('❌ PINs do not match'); return;
     }
 
-    localStorage.setItem('sw_user_pin', newP.value);
-    localStorage.setItem('sw_pin_setup_done', '1');
+    localStorage.setItem(pinStorageKey(), newP.value);
     if (window.sw && typeof window.sw.updateProfilePin === 'function') {
       window.sw.updateProfilePin(newP.value).catch(() => {});
     }
